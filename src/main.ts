@@ -74,20 +74,15 @@ const generateWords = (
 const getWordGenerationOptionsByLevel = (
   level: number
 ): GenerateWordsOptions => {
-  switch (level) {
-    case 1:
-      return {
-        count: 8,
-        length: 5,
-      };
-    case 2:
-      return {
-        count: 8,
-        length: 6,
-      };
-    default:
-      throw new Error("Level not supported");
-  }
+  // TODO: custom options per level
+  return {
+    count: level,
+    length: 3,
+  };
+};
+
+const handleIncorrectKey = (keyTyped: string) => {
+  console.info(`Incorrect key typed: ${keyTyped}`);
 };
 
 interface WordObject {
@@ -108,52 +103,6 @@ const init = async () => {
     currentTargetId = undefined;
     currentTypedWord = "";
     nextExpectedCharacter = undefined;
-  };
-
-  const updateCurrentlyTypedWord = (
-    wordObject: WordObject,
-    typedWord: string
-  ) => {
-    const typedFullWord = typedWord.length === wordObject.word.length;
-    if (typedFullWord) {
-      const i = activeWordObjects.findIndex(
-        (activeWordObject) => activeWordObject.id === wordObject.id
-      );
-      activeWordObjects.splice(i, 1);
-      resetWordState();
-
-      // Remove the associated DOM element
-      debug.execute(() => {
-        const e = document.querySelector(`#${util.idToDomId(wordObject.id)}`);
-        if (!e) {
-          throw new Error("Couldn't find element");
-        }
-        e.remove();
-      });
-
-      return;
-    }
-
-    currentTypedWord = typedWord;
-    nextExpectedCharacter = wordObject.word[currentTypedWord.length];
-
-    // Update the DOM element to highlight the correct characters
-    debug.execute(() => {
-      debug.log({ nextExpectedCharacter });
-
-      const e = document.querySelector(`#${util.idToDomId(wordObject.id)}`);
-      if (!e) {
-        throw new Error("Couldn't find element");
-      }
-
-      e.classList.add("activeWord");
-      e.innerHTML = `
-        <span class="typedWord">${typedWord}</span> 
-        <span class="remainingWord">${wordObject.word.slice(
-          typedWord.length
-        )}</span>
-      `;
-    });
   };
 
   const initializeLevel = (level: number) => {
@@ -181,6 +130,14 @@ const init = async () => {
     });
 
     debug.execute(() => {
+      if (document.querySelector("#level")) {
+        document.querySelector("#level")?.remove();
+      }
+      const levelH1 = document.createElement("h1");
+      levelH1.id = "level";
+      levelH1.innerHTML = `Level ${level}`;
+      appContainer?.appendChild(levelH1);
+
       const wordList = document.createElement("ul");
       activeWordObjects.forEach(({ id, word }) => {
         const wordItem = document.createElement("li");
@@ -189,6 +146,56 @@ const init = async () => {
         wordList.appendChild(wordItem);
       });
       appContainer!.appendChild(wordList);
+    });
+  };
+
+  const updateCurrentlyTypedWord = (
+    wordObject: WordObject,
+    typedWord: string
+  ) => {
+    const typedFullWord = typedWord.length === wordObject.word.length;
+    if (typedFullWord) {
+      const i = activeWordObjects.findIndex(
+        (activeWordObject) => activeWordObject.id === wordObject.id
+      );
+      activeWordObjects.splice(i, 1);
+      resetWordState();
+
+      if (activeWordObjects.length === 0) {
+        initializeLevel(currentLevel + 1);
+      }
+
+      // Remove the associated DOM element
+      debug.execute(() => {
+        const e = document.querySelector(`#${util.idToDomId(wordObject.id)}`);
+        if (!e) {
+          throw new Error("Couldn't find element");
+        }
+        e.remove();
+      });
+
+      return;
+    }
+
+    currentTypedWord = typedWord;
+    nextExpectedCharacter = wordObject.word[currentTypedWord.length];
+
+    // Update the DOM element to highlight the correct characters
+    debug.execute(() => {
+      debug.info(`Correct character!`);
+
+      const e = document.querySelector(`#${util.idToDomId(wordObject.id)}`);
+      if (!e) {
+        throw new Error("Couldn't find element");
+      }
+
+      e.classList.add("activeWord");
+      e.innerHTML = `
+        <span class="typedWord">${typedWord}</span> 
+        <span class="remainingWord">${wordObject.word.slice(
+          typedWord.length
+        )}</span>
+      `;
     });
   };
 
@@ -207,7 +214,7 @@ const init = async () => {
           currentTargetId = newTargetId;
           updateCurrentlyTypedWord(obj, key);
         } else {
-          // TODO: play a sound/show UI to indicate that the key was incorrect
+          handleIncorrectKey(key);
         }
         return;
       }
@@ -220,7 +227,7 @@ const init = async () => {
         }
         updateCurrentlyTypedWord(obj, currentTypedWord + key);
       } else {
-        // TODO: play a sound/show UI to indicate that the key was incorrect
+        handleIncorrectKey(key);
       }
     });
   };
