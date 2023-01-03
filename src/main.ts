@@ -90,15 +90,71 @@ const getWordGenerationOptionsByLevel = (
   }
 };
 
+interface WordObject {
+  id: string;
+  word: string;
+  position: { x: number; y: number };
+}
+
 const init = async () => {
   let currentLevel = 0;
   let currentTargetId: string | undefined;
-  let activeWordObjects: {
-    id: string;
-    word: string;
-    position: { x: number; y: number };
-  }[] = [];
+  let currentTypedWord: string = "";
+  let nextExpectedCharacter: string | undefined;
+  let activeWordObjects: WordObject[] = [];
   let activeWordFirstLetterToIdMap = new Map<string, string>();
+
+  const resetWordState = () => {
+    currentTargetId = undefined;
+    currentTypedWord = "";
+    nextExpectedCharacter = undefined;
+  };
+
+  const updateCurrentlyTypedWord = (
+    wordObject: WordObject,
+    typedWord: string
+  ) => {
+    const typedFullWord = typedWord.length === wordObject.word.length;
+    if (typedFullWord) {
+      const i = activeWordObjects.findIndex(
+        (activeWordObject) => activeWordObject.id === wordObject.id
+      );
+      activeWordObjects.splice(i, 1);
+      resetWordState();
+
+      // Remove the associated DOM element
+      debug.execute(() => {
+        const e = document.querySelector(`#${util.idToDomId(wordObject.id)}`);
+        if (!e) {
+          throw new Error("Couldn't find element");
+        }
+        e.remove();
+      });
+
+      return;
+    }
+
+    currentTypedWord = typedWord;
+    nextExpectedCharacter = wordObject.word[currentTypedWord.length];
+
+    // Update the DOM element to highlight the correct characters
+    debug.execute(() => {
+      debug.log({ nextExpectedCharacter });
+
+      const e = document.querySelector(`#${util.idToDomId(wordObject.id)}`);
+      if (!e) {
+        throw new Error("Couldn't find element");
+      }
+
+      e.classList.add("activeWord");
+      e.innerHTML = `
+        <span class="typedWord">${typedWord}</span> 
+        <span class="remainingWord">${wordObject.word.slice(
+          typedWord.length
+        )}</span>
+      `;
+    });
+  };
 
   const initializeLevel = (level: number) => {
     currentLevel = level;
@@ -143,10 +199,13 @@ const init = async () => {
       if (currentTargetId === undefined) {
         const newTargetId = activeWordFirstLetterToIdMap.get(key);
         if (newTargetId) {
-          document.querySelector(".activeWord")?.classList.remove("activeWord");
-          document
-            .querySelector(`#${util.idToDomId(newTargetId)}`)
-            ?.classList.add("activeWord");
+          const obj = activeWordObjects.find(({ id }) => id === newTargetId);
+          if (!obj) {
+            throw new Error("Couldn't find active word");
+          }
+
+          currentTargetId = newTargetId;
+          updateCurrentlyTypedWord(obj, key);
         } else {
           // TODO: play a sound/show UI to indicate that the key was incorrect
         }
@@ -154,9 +213,19 @@ const init = async () => {
       }
 
       // TODO: check to see if the key matches the next letter in the current target word
+      if (key === nextExpectedCharacter) {
+        const obj = activeWordObjects.find(({ id }) => id === currentTargetId);
+        if (!obj) {
+          throw new Error("Couldn't find active word");
+        }
+        updateCurrentlyTypedWord(obj, currentTypedWord + key);
+      } else {
+        // TODO: play a sound/show UI to indicate that the key was incorrect
+      }
     });
   };
 
+  // This will eventually handle reading state values to determine what to do next.
   const tick = setInterval(() => {}, 50);
 
   initializeLevel(1);
