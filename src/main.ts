@@ -1,4 +1,10 @@
+import * as uuid from "uuid";
+import debug from "./debug";
+import util from "./util";
+
 import "./style.css";
+
+const appContainer = document.getElementById("app");
 
 const KEYS_TO_PRACTICE = ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";"];
 
@@ -19,6 +25,17 @@ const generateWords = (
   options: GenerateWordsOptions
 ) => {
   const words: string[] = [];
+  const wordCount = Math.min(possibleKeys.length, options.count);
+  if (wordCount !== options.count) {
+    console.warn(
+      `Only generating ${wordCount} words -- 
+      can only generate as many words as there 
+      are unique letters since each word needs 
+      to start with a different letter`
+    );
+  }
+
+  let availableFirstLetters = [...possibleKeys];
   for (let wordIndex = 0; wordIndex < options.count; wordIndex++) {
     let word = "";
     const wordLength =
@@ -27,12 +44,24 @@ const generateWords = (
         : Math.floor(Math.random() * (options.maxLength - options.minLength)) +
           options.minLength;
 
-    // TODO: enforce that the first letter of each word is different
     for (
       let characterIndex = 0;
       characterIndex < wordLength;
       characterIndex++
     ) {
+      // we enforce that the first letter of each word is different so
+      // that it's clear which word the user is targeting when they start
+      // typing for the first time
+      if (characterIndex === 0) {
+        const randomFirstLetterIndex = Math.floor(
+          Math.random() * availableFirstLetters.length
+        );
+        const randomFirstLetter = availableFirstLetters[randomFirstLetterIndex];
+        availableFirstLetters.splice(randomFirstLetterIndex, 1);
+        word += randomFirstLetter;
+        continue;
+      }
+
       const randomIndex = Math.floor(Math.random() * possibleKeys.length);
       word += possibleKeys[randomIndex];
     }
@@ -43,6 +72,96 @@ const generateWords = (
   return words;
 };
 
-for (let i = 0; i < 3; i++) {
-  console.log(generateWords(KEYS_TO_PRACTICE, { count: 8, length: 5 }));
-}
+const getWordGenerationOptionsByLevel = (
+  level: number
+): GenerateWordsOptions => {
+  switch (level) {
+    case 1:
+      return {
+        count: 8,
+        length: 5,
+      };
+    case 2:
+      return {
+        count: 8,
+        length: 6,
+      };
+    default:
+      throw new Error("Level not supported");
+  }
+};
+
+const init = async () => {
+  let currentLevel = 0;
+  let currentTargetId: string | undefined;
+  let activeWordObjects: {
+    id: string;
+    word: string;
+    position: { x: number; y: number };
+  }[] = [];
+  let activeWordFirstLetterToIdMap = new Map<string, string>();
+
+  const initializeLevel = (level: number) => {
+    currentLevel = level;
+
+    const opts = getWordGenerationOptionsByLevel(level);
+    const words = generateWords(KEYS_TO_PRACTICE, opts);
+
+    words.forEach((word, id) => {
+      const activeWordObject = {
+        id: String(id),
+        word,
+        position: { x: 0, y: 0 }, // TODO: real position on the right side of the screen probably
+      };
+      activeWordObjects.push(activeWordObject);
+
+      const firstLetter = word[0];
+      activeWordFirstLetterToIdMap.set(firstLetter, activeWordObject.id);
+    });
+
+    debug.log({
+      message: "Initializing level",
+      level,
+      activeWordObjects,
+    });
+
+    debug.execute(() => {
+      const wordList = document.createElement("ul");
+      activeWordObjects.forEach(({ id, word }) => {
+        const wordItem = document.createElement("li");
+        wordItem.id = util.idToDomId(id);
+        wordItem.innerText = `${word}`;
+        wordList.appendChild(wordItem);
+      });
+      appContainer!.appendChild(wordList);
+    });
+  };
+
+  const initializeKeyboardListeners = () => {
+    document.addEventListener("keydown", (e) => {
+      const { key } = e;
+
+      if (currentTargetId === undefined) {
+        const newTargetId = activeWordFirstLetterToIdMap.get(key);
+        if (newTargetId) {
+          document.querySelector(".activeWord")?.classList.remove("activeWord");
+          document
+            .querySelector(`#${util.idToDomId(newTargetId)}`)
+            ?.classList.add("activeWord");
+        } else {
+          // TODO: play a sound/show UI to indicate that the key was incorrect
+        }
+        return;
+      }
+
+      // TODO: check to see if the key matches the next letter in the current target word
+    });
+  };
+
+  const tick = setInterval(() => {}, 50);
+
+  initializeLevel(1);
+  initializeKeyboardListeners();
+};
+
+init();
