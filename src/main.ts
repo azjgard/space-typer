@@ -1,4 +1,3 @@
-import * as uuid from "uuid";
 import debug from "./debug";
 import util from "./util";
 
