@@ -1,23 +1,48 @@
-import './style.css'
-import typescriptLogo from './typescript.svg'
-import { setupCounter } from './counter'
+import "./style.css";
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-`
+const KEYS_TO_PRACTICE = ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";"];
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+type GenerateWordsOptions = {
+  count: number;
+} & (
+  | {
+      length: number;
+    }
+  | {
+      minLength: number;
+      maxLength: number;
+    }
+);
+
+const generateWords = (
+  possibleKeys: string[],
+  options: GenerateWordsOptions
+) => {
+  const words: string[] = [];
+  for (let wordIndex = 0; wordIndex < options.count; wordIndex++) {
+    let word = "";
+    const wordLength =
+      "length" in options
+        ? options.length
+        : Math.floor(Math.random() * (options.maxLength - options.minLength)) +
+          options.minLength;
+
+    // TODO: enforce that the first letter of each word is different
+    for (
+      let characterIndex = 0;
+      characterIndex < wordLength;
+      characterIndex++
+    ) {
+      const randomIndex = Math.floor(Math.random() * possibleKeys.length);
+      word += possibleKeys[randomIndex];
+    }
+
+    words.push(word);
+  }
+
+  return words;
+};
+
+for (let i = 0; i < 3; i++) {
+  console.log(generateWords(KEYS_TO_PRACTICE, { count: 8, length: 5 }));
+}
