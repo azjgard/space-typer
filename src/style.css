@@ -5,3 +5,14 @@ ul {
 .typedWord {
   color: red;
 }
+
+canvas {
+  background-color: black;
+}
+
+#debug {
+  position: fixed;
+  top: 0;
+  right: 20px;
+  padding: 30px;
+}

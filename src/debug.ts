@@ -1,9 +1,7 @@
-const DEBUG = true;
-
-export default {
-  log: (...args: any[]) => DEBUG && console.log(...args),
-  info: (...args: any[]) => DEBUG && console.info(...args),
-  warn: (...args: any[]) => DEBUG && console.warn(...args),
-  error: (...args: any[]) => DEBUG && console.error(...args),
-  execute: (cb: () => void) => DEBUG && cb(),
-};
+export default (debug: boolean) => ({
+  log: (...args: any[]) => debug && console.log(...args),
+  info: (...args: any[]) => debug && console.info(...args),
+  warn: (...args: any[]) => debug && console.warn(...args),
+  error: (...args: any[]) => debug && console.error(...args),
+  execute: (cb: () => void) => debug && cb(),
+});
