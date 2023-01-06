@@ -1,21 +1,22 @@
-import Entity, { IEntityOptions } from "./entity";
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../../config";
+import Entity from "./entities/entity";
 
 const canvas = document.createElement("canvas");
-canvas.width = 1300;
-canvas.height = 800;
+canvas.width = CANVAS_WIDTH;
+canvas.height = CANVAS_HEIGHT;
 
 let entities: { [entityId: string]: Entity } = {};
 
-function createEntity(
-  EntityClass: new (options: IEntityOptions) => Entity,
-  entityArgs?: Omit<IEntityOptions & { id: string }, "game">
+function createEntity<C extends { new (...args: any[]): Entity }>(
+  EntityClass: C,
+  entityArgs?: Omit<ConstructorParameters<C>[0] & { id: string }, "game">
 ) {
   const entityId = entityArgs?.id;
   if (!entityId) {
     throw new Error("Missing entityId");
   }
 
-  const entity = new EntityClass({ ...entityArgs, game });
+  const entity: Entity = new EntityClass({ ...entityArgs, game });
   if (entities[entity.id]) {
     throw new Error("All entities must have a unique id");
   }
@@ -24,7 +25,7 @@ function createEntity(
   return entity;
 }
 
-export function removeEntity(entity: Entity) {
+export function removeEntity<E extends Entity>(entity: E) {
   if (!entity.id) {
     throw new Error("Cannot remove an entity without an id");
   }
@@ -46,3 +47,5 @@ export const game = {
   canvas,
   context: canvas.getContext("2d")!,
 };
+
+export type Game = typeof game;

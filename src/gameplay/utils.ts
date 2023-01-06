@@ -1,4 +1,4 @@
-import Entity from "./entity";
+import Entity from "./entities/entity";
 
 export function absoluteClamp(value: number, clamp: number) {
   const c = Math.abs(clamp);

@@ -1,8 +1,10 @@
-import Entity from "./entity";
-import { game, removeEntity } from "./game";
+import { game } from "./game";
 import { createTypingEngine } from "./typingEngine";
 import createDebugger from "../debug";
 import { DEBUG_GAME } from "../../config";
+
+import Entity from "./entities/entity";
+import Enemy1 from "./entities/enemy1";
 
 const debug = createDebugger(DEBUG_GAME);
 
@@ -17,23 +19,9 @@ export const GROUND_SIZE = { height: 75, width: canvas.width };
 const app = document.querySelector("#game")!;
 app.appendChild(canvas);
 
+const enemyIdFromWordId = (wordId: string) => `enemy-${wordId}`;
+
 export function initGameplay() {
-  // const _player = game.createEntity(Entity, {
-  //   id: "player",
-  //   position: {
-  //     x: 0,
-  //     y: 0,
-  //   },
-  //   size: {
-  //     width: 50,
-  //     height: 50,
-  //   },
-  //   fillStyle: "black",
-  //   strokeStyle: "red",
-  // });
-
-  const enemyIdFromWordId = (wordId: string) => `enemy-${wordId}`;
-
   const typingEngine = createTypingEngine();
 
   typingEngine.on("initializeLevel", function initializeLevel(state) {
@@ -46,19 +34,15 @@ export function initGameplay() {
 
     // create a new entity for each word
     state.activeWordObjects.forEach((wordObject, i) => {
-      game.createEntity(Entity, {
+      game.createEntity(Enemy1, {
         id: enemyIdFromWordId(wordObject.id),
-        type: "enemy",
-        position: { x: game.canvas.width, y: 20 + i * 50 },
-        size: { width: 30, height: 30 },
-        velocity: { x: -2, y: 0 },
-        fillStyle: "white",
+        position: { x: game.canvas.width, y: 20 + i * 60 },
       });
       // TODO: attach a text entity to the enemy entity so that it renders beneath it
     });
   });
 
-  typingEngine.on("typedFullWord", (state) => {
+  typingEngine.on("typedFullWord", function destroyEnemy(state) {
     const destroyedEnemy = entities[enemyIdFromWordId(state.typedFullWordId)];
     if (!destroyedEnemy) {
       throw new Error("Can't destroy enemy that doesn't exist");
@@ -89,8 +73,6 @@ export function initGameplay() {
   let timeOld = 0;
   let delta = 0;
   const update = (delta: number) => {
-    const state = typingEngine.getState();
-
     Object.entries(entities).forEach(([, entity]) => {
       entity.update(entities, delta);
     });
@@ -104,7 +86,7 @@ export function initGameplay() {
     timeOld = timeNow;
 
     Object.entries(entities).forEach(([, entity]) => {
-      entity.draw(context);
+      entity.draw();
     });
   };
 

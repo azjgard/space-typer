@@ -2,7 +2,7 @@ import Entity, {
   DrawEntityArgs,
   IEntityOptions,
   UpdateEntityArgs,
-} from "./entity";
+} from "./entities/entity";
 
 interface IHitBoxOptions extends IEntityOptions {
   passthroughEntityIds?: Set<string>;
