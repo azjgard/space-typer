@@ -36,7 +36,7 @@ export function initGameplay() {
     state.activeWordObjects.forEach((wordObject, i) => {
       game.createEntity(Enemy1, {
         id: enemyIdFromWordId(wordObject.id),
-        position: { x: game.canvas.width, y: 20 + i * 60 },
+        position: { x: game.canvas.width, y: 30 + i * Enemy1.height + 10 },
       });
       // TODO: attach a text entity to the enemy entity so that it renders beneath it
     });
