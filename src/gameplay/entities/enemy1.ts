@@ -29,9 +29,9 @@ export default class Enemy1 extends Entity {
       },
       text: {
         value: options.word,
-        fontSize: 36, // TODO: make dynamic according to number of characters
         getPosition: (e) => ({ x: e.position.x, y: e.position.y }),
-        color: "blue",
+        fillStyle: "black",
+        font: "32px serif",
       },
       size: { width: Enemy1.width, height: Enemy1.height },
       velocity: { x: Enemy1.startingVelocity, y: 0 },

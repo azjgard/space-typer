@@ -8,6 +8,13 @@ export interface IGameObject {
 export type DrawEntityArgs = [CanvasRenderingContext2D];
 export type UpdateEntityArgs = [{ [entityId: string]: Entity }, number];
 
+interface IText {
+  value: string;
+  font: string;
+  fillStyle: string;
+  background?: string;
+}
+
 export interface IEntityOptions extends IGameObject {
   id: string;
   game: Game;
@@ -39,14 +46,7 @@ export interface IEntityOptions extends IGameObject {
     };
   };
 
-  text?: {
-    value: string;
-    font?: string;
-    fontSize: string | number;
-    background?: string;
-    color?: string;
-    getPosition: (e: Entity) => { x: number; y: number };
-  };
+  text?: IText | IText[];
 }
 
 export interface IEntity {
@@ -73,14 +73,7 @@ export interface IEntity {
     };
   };
 
-  text?: {
-    value: string;
-    font?: string;
-    fontSize: string | number;
-    background?: string;
-    color?: string;
-    getPosition: (e: Entity) => { x: number; y: number };
-  };
+  text?: IText[];
 }
 
 type IEntityWithGame = IEntity & { game: Game };
@@ -121,7 +114,11 @@ export default class Entity implements IEntityWithGame {
     this.type = options.type || "UNKNOWN";
     this.direction = options.direction || 1;
 
-    this.text = options.text;
+    this.text = Array.isArray(options.text)
+      ? options.text
+      : options.text
+      ? [options.text]
+      : undefined;
 
     if (options.sprite) {
       this.sprite = { ...options.sprite };
@@ -180,16 +177,8 @@ export default class Entity implements IEntityWithGame {
     }
 
     if (this.text) {
-      const fontSize = `${parseInt("" + this.text.fontSize)}px`;
-      const font = this.text.font || "serif";
-      context.font = `${fontSize} ${font}`;
-      context.fillStyle = this.text.color || "black";
-      const textSize = context.measureText(this.text.value);
-      context.fillText(
-        this.text.value,
-        this.position.x + textSize.width / 2,
-        this.position.y
-      );
+      const textWidth = this.computeTextWidth();
+      this.drawText(this.position.x + textWidth / 2, this.position.y);
     }
   }
 
@@ -258,6 +247,40 @@ export default class Entity implements IEntityWithGame {
     }
 
     context.restore();
+  }
+
+  private drawText(x: number, y: number) {
+    if (!this.text) {
+      return;
+    }
+
+    const { context } = this.game;
+
+    let defaultFillStyle = context.fillStyle;
+    let defaultFont = context.font;
+
+    this.text.forEach(({ value, fillStyle, font }) => {
+      context.fillStyle = fillStyle || defaultFillStyle;
+      context.font = font || defaultFont;
+      context.fillText(value, x, y);
+      x += context.measureText(value).width;
+    });
+  }
+
+  private computeTextWidth() {
+    if (!this.text) {
+      return 0;
+    }
+
+    const { context } = this.game;
+
+    let width = 0;
+    this.text.forEach((t) => {
+      context.fillStyle = t.fillStyle;
+      context.font = t.font;
+      width += this.game.context.measureText(t.value).width;
+    });
+    return width;
   }
 }
 
