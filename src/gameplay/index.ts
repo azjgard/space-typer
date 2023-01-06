@@ -24,7 +24,7 @@ const enemyIdFromWordId = (wordId: string) => `enemy-${wordId}`;
 export function initGameplay() {
   const typingEngine = createTypingEngine();
 
-  typingEngine.on("initializeLevel", function initializeLevel(state) {
+  typingEngine.on("initializeLevel", async function initializeLevel(state) {
     // clear out any existing enemies
     Object.values(game.entities).forEach((entity) => {
       if (entity.type === "enemy") {
@@ -32,14 +32,16 @@ export function initGameplay() {
       }
     });
 
-    // create a new entity for each word
-    state.activeWordObjects.forEach((wordObject, i) => {
+    for (let i = 0; i < state.activeWordObjects.length; i++) {
+      const awo = state.activeWordObjects[i];
       game.createEntity(Enemy1, {
-        id: enemyIdFromWordId(wordObject.id),
-        position: { x: game.canvas.width, y: 30 + i * Enemy1.height + 10 },
+        id: enemyIdFromWordId(awo.id),
+        position: { x: game.canvas.width, y: 30 + i * (Enemy1.height + 30) },
+        word: awo.word,
       });
+      await new Promise((r) => setTimeout(r, Math.random() * 1000) + 500);
       // TODO: attach a text entity to the enemy entity so that it renders beneath it
-    });
+    }
   });
 
   typingEngine.on("typedFullWord", function destroyEnemy(state) {
@@ -64,7 +66,7 @@ export function initGameplay() {
     // TODO: replace this with a better animation
     targetedEnemy.fillStyle = "red";
     setTimeout(() => {
-      targetedEnemy.fillStyle = "white";
+      targetedEnemy.fillStyle = undefined;
     }, (FRAME_SIZE_MS * 60) / 10);
   });
 

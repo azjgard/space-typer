@@ -1,7 +1,9 @@
 import Entity, { IEntityOptions } from "./entity";
 import enemySpritesheet from "../../assets/sprites/enemies/ship-spritesheet.png";
 
-type IEnemyOptions = Omit<IEntityOptions, "type"> & {};
+type IEnemyOptions = Omit<IEntityOptions, "type"> & {
+  word: string;
+};
 
 export default class Enemy1 extends Entity {
   public static width = 64;
@@ -25,6 +27,12 @@ export default class Enemy1 extends Entity {
           sHeight: 32,
         },
       },
+      text: {
+        value: options.word,
+        fontSize: 36, // TODO: make dynamic according to number of characters
+        getPosition: (e) => ({ x: e.position.x, y: e.position.y }),
+        color: "blue",
+      },
       size: { width: Enemy1.width, height: Enemy1.height },
       velocity: { x: Enemy1.startingVelocity, y: 0 },
     });
@@ -33,7 +41,7 @@ export default class Enemy1 extends Entity {
   }
 
   update(...args: any[]) {
-    this.velocity.y = (this.wave.next().value as number) * 1.5;
+    this.velocity.y = (this.wave.next().value as number) * 1;
     super.update(args[0], args[1]);
   }
 }
