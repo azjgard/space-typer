@@ -48,7 +48,6 @@ export function initGameplay() {
 
     // Stagger activation of enemies in the wave
     for (let i = 0; i < entityIds.length; i++) {
-      console.log(i);
       entities[entityIds[i]].activate();
       await new Promise((r) => setTimeout(r, Math.random() * 500 + 200));
     }
@@ -90,7 +89,7 @@ export function initGameplay() {
       height: 100,
     },
     position: {
-      x: 20,
+      x: 35,
       y: game.canvas.height / 2 - 50 / 2,
     },
   });

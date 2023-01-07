@@ -1,5 +1,7 @@
 import * as uuid from "uuid";
 import { Game } from "../game";
+import ImageManager from "../ImageManager";
+import { drawImage } from "../lib";
 
 export interface IGameObject {
   game: Game;
@@ -139,11 +141,11 @@ export default class Entity implements IEntityWithGame {
 
   setSprite(options: ISpriteOptions) {
     this.sprite = { ...options };
-    this.sprite.image = new Image();
-    this.sprite.image.src = this.sprite.path;
-    this.sprite.image.onload = () => {
-      this.sprite!.loaded = true;
-    };
+    ImageManager.getAsync(this.sprite.path).then((image) => {
+      if (!this.sprite) return;
+      this.sprite.image = image;
+      this.sprite.loaded = true;
+    });
   }
 
   draw() {
@@ -220,60 +222,11 @@ export default class Entity implements IEntityWithGame {
     }
 
     const { context } = this.game;
-    let { image, x, y, width, height, deg, flip, flop, center } = args;
-
-    context.save();
-
-    if (typeof width === "undefined") width = image.width as number;
-    if (typeof height === "undefined") height = image.height as number;
-    if (typeof center === "undefined") center = false;
-
-    // Set rotation point to center of image, instead of top/left
-    if (center) {
-      x -= width / 2;
-      y -= height / 2;
-    }
-
-    // Set the origin to the center of the image
-    context.translate(x + width / 2, y + height / 2);
-
-    // Rotate the canvas around the origin
-    const rad = 2 * Math.PI - (deg * Math.PI) / 180;
-    context.rotate(rad);
-
-    // Flip/flop the canvas
-    let flipScale;
-    if (flip) flipScale = -1;
-    else flipScale = 1;
-
-    let flopScale;
-    if (flop) flopScale = -1;
-    else flopScale = 1;
-    context.scale(flipScale, flopScale);
-
-    // coordinates on the canvas to draw the image
-    const dx = -width / 2;
-    const dy = -height / 2;
-    const dWidth = width;
-    const dHeight = height;
-
-    if (this.sprite.sheet) {
-      context.drawImage(
-        image,
-        this.sprite.sheet.sx,
-        this.sprite.sheet.sy,
-        this.sprite.sheet.sWidth,
-        this.sprite.sheet.sHeight,
-        dx,
-        dy,
-        dWidth,
-        dHeight
-      );
-    } else {
-      context.drawImage(image, dx, dy, dWidth, dHeight);
-    }
-
-    context.restore();
+    drawImage({
+      ...args,
+      context,
+      sheet: this.sprite.sheet,
+    });
   }
 
   private drawText(x: number, y: number) {
