@@ -15,6 +15,16 @@ interface IText {
   background?: string;
 }
 
+interface ISpriteOptions {
+  path: string;
+  sheet?: {
+    sx: number;
+    sy: number;
+    sWidth: number;
+    sHeight: number;
+  };
+}
+
 export interface IEntityOptions extends IGameObject {
   id: string;
   active?: boolean;
@@ -37,15 +47,7 @@ export interface IEntityOptions extends IGameObject {
   fillStyle?: string;
   strokeStyle?: string;
 
-  sprite?: {
-    path: string;
-    sheet?: {
-      sx: number;
-      sy: number;
-      sWidth: number;
-      sHeight: number;
-    };
-  };
+  sprite?: ISpriteOptions;
 
   text?: IText | IText[];
 }
@@ -129,15 +131,19 @@ export default class Entity implements IEntityWithGame {
       : undefined;
 
     if (options.sprite) {
-      this.sprite = { ...options.sprite };
-      this.sprite.image = new Image();
-      this.sprite.image.src = this.sprite.path;
-      this.sprite.image.onload = () => {
-        this.sprite!.loaded = true;
-      };
+      this.setSprite(options.sprite);
     }
 
     this.game = options.game;
+  }
+
+  setSprite(options: ISpriteOptions) {
+    this.sprite = { ...options };
+    this.sprite.image = new Image();
+    this.sprite.image.src = this.sprite.path;
+    this.sprite.image.onload = () => {
+      this.sprite!.loaded = true;
+    };
   }
 
   draw() {

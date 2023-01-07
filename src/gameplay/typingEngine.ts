@@ -78,7 +78,7 @@ const getWordGenerationOptionsByLevel = (
   // TODO: custom options per level
   return {
     count: level,
-    length: 1,
+    length: 4,
   };
 };
 

@@ -4,6 +4,8 @@ import createDebugger from "../debug";
 import { DEBUG_GAME } from "../../config";
 
 import Enemy1 from "./entities/enemy1";
+import { createHealthManager } from "./healthManager";
+import Player from "./entities/player";
 
 const debug = createDebugger(DEBUG_GAME);
 
@@ -48,7 +50,7 @@ export function initGameplay() {
     for (let i = 0; i < entityIds.length; i++) {
       console.log(i);
       entities[entityIds[i]].activate();
-      await new Promise((r) => setTimeout(r, Math.random() * 1000 + 700));
+      await new Promise((r) => setTimeout(r, Math.random() * 500 + 200));
     }
   });
 
@@ -80,6 +82,19 @@ export function initGameplay() {
 
   typingEngine.start();
 
+  const healthManager = createHealthManager(game);
+
+  const player = game.createEntity(Player, {
+    size: {
+      width: 100,
+      height: 100,
+    },
+    position: {
+      x: 20,
+      y: game.canvas.height / 2 - 50 / 2,
+    },
+  });
+
   let timeOld = 0;
   let delta = 0;
   const update = (delta: number) => {
@@ -98,6 +113,8 @@ export function initGameplay() {
     Object.entries(entities).forEach(([, entity]) => {
       entity.draw();
     });
+
+    healthManager.draw();
   };
 
   setInterval(() => update(0), FRAME_SIZE_MS);

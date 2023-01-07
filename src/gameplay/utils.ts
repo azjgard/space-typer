@@ -23,3 +23,14 @@ export function degreesToRadians(degrees: number) {
 }
 
 export const IDENTITY_MATRIX = [1, 0, 0, 1, 0, 0];
+
+export function* generateSinWave() {
+  let x = Math.random();
+  while (true) {
+    x += 0.1;
+    if (x > Math.PI * 2) {
+      x = 0;
+    }
+    yield Math.sin(x);
+  }
+}

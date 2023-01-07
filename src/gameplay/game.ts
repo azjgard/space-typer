@@ -7,22 +7,20 @@ canvas.height = CANVAS_HEIGHT;
 
 let entities: { [entityId: string]: Entity } = {};
 
-function createEntity<C extends { new (...args: any[]): Entity }>(
+function createEntity<E extends Entity, C extends { new (...args: any[]): E }>(
   EntityClass: C,
-  entityArgs?: Omit<ConstructorParameters<C>[0] & { id: string }, "game">
+  entityArgs?: Omit<ConstructorParameters<C>[0], "game">
 ) {
-  const entityId = entityArgs?.id;
-  if (!entityId) {
-    throw new Error("Missing entityId");
-  }
-
-  const entity: Entity = new EntityClass({ ...entityArgs, game });
+  const entity = new EntityClass({
+    ...entityArgs,
+    game,
+  });
   if (entities[entity.id]) {
     throw new Error("All entities must have a unique id");
   }
 
   entities[entity.id] = entity;
-  return entity;
+  return entity as InstanceType<C>;
 }
 
 export function removeEntity<E extends Entity>(entity: E) {

@@ -1,5 +1,6 @@
 import Entity, { IEntityOptions } from "./entity";
 import enemySpritesheet from "../../assets/sprites/enemies/ship-spritesheet.png";
+import { generateSinWave } from "../utils";
 
 type IEnemyOptions = Omit<IEntityOptions, "type"> & {
   word: string;
@@ -29,8 +30,8 @@ export default class Enemy1 extends Entity {
       },
       text: {
         value: options.word,
-        getPosition: (e) => ({ x: e.position.x, y: e.position.y }),
-        fillStyle: "black",
+        // getPosition: (e) => ({ x: e.position.x, y: e.position.y }),
+        fillStyle: "white",
         font: "32px serif",
       },
       size: { width: Enemy1.width, height: Enemy1.height },
@@ -43,16 +44,5 @@ export default class Enemy1 extends Entity {
   update(...args: any[]) {
     this.velocity.y = (this.wave.next().value as number) * 1;
     super.update(args[0], args[1]);
-  }
-}
-
-function* generateSinWave() {
-  let x = Math.random();
-  while (true) {
-    x += 0.1;
-    if (x > Math.PI * 2) {
-      x = 0;
-    }
-    yield Math.sin(x);
   }
 }
