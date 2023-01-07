@@ -33,6 +33,7 @@ export function removeEntity<E extends Entity>(entity: E) {
     console.warn("Cannot remove an entity that is not being tracked");
     return;
   }
+
   delete entities[entity.id];
 }
 

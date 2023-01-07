@@ -3,7 +3,6 @@ import { createTypingEngine } from "./typingEngine";
 import createDebugger from "../debug";
 import { DEBUG_GAME } from "../../config";
 
-import Entity from "./entities/entity";
 import Enemy1 from "./entities/enemy1";
 
 const debug = createDebugger(DEBUG_GAME);
@@ -27,20 +26,29 @@ export function initGameplay() {
   typingEngine.on("initializeLevel", async function initializeLevel(state) {
     // clear out any existing enemies
     Object.values(game.entities).forEach((entity) => {
-      if (entity.type === "enemy") {
+      if (/enemy/.test(entity.type)) {
         game.removeEntity(entity);
       }
     });
 
+    let entityIds: string[] = [];
     for (let i = 0; i < state.activeWordObjects.length; i++) {
       const awo = state.activeWordObjects[i];
+      const entityId = enemyIdFromWordId(awo.id);
       game.createEntity(Enemy1, {
-        id: enemyIdFromWordId(awo.id),
+        id: entityId,
+        active: false,
         position: { x: game.canvas.width, y: 30 + i * (Enemy1.height + 30) },
         word: awo.word,
       });
-      await new Promise((r) => setTimeout(r, Math.random() * 1000) + 500);
-      // TODO: attach a text entity to the enemy entity so that it renders beneath it
+      entityIds.push(entityId);
+    }
+
+    // Stagger activation of enemies in the wave
+    for (let i = 0; i < entityIds.length; i++) {
+      console.log(i);
+      entities[entityIds[i]].activate();
+      await new Promise((r) => setTimeout(r, Math.random() * 1000 + 700));
     }
   });
 

@@ -17,6 +17,7 @@ interface IText {
 
 export interface IEntityOptions extends IGameObject {
   id: string;
+  active?: boolean;
   game: Game;
   type?: string;
   position?: {
@@ -51,6 +52,7 @@ export interface IEntityOptions extends IGameObject {
 
 export interface IEntity {
   id: string;
+  getIsActive: () => boolean;
   type: string;
   position: { x: number; y: number };
   direction: number;
@@ -87,6 +89,8 @@ export default class Entity implements IEntityWithGame {
   acceleration;
   velocity;
 
+  private active: boolean = true;
+
   fillStyle;
   strokeStyle;
   sprite: IEntity["sprite"];
@@ -114,6 +118,10 @@ export default class Entity implements IEntityWithGame {
     this.type = options.type || "UNKNOWN";
     this.direction = options.direction || 1;
 
+    if (options.active !== undefined) {
+      this.active = options.active;
+    }
+
     this.text = Array.isArray(options.text)
       ? options.text
       : options.text
@@ -133,6 +141,8 @@ export default class Entity implements IEntityWithGame {
   }
 
   draw() {
+    if (!this.active) return;
+
     const { context } = this.game;
 
     if (this.strokeStyle) {
@@ -182,7 +192,18 @@ export default class Entity implements IEntityWithGame {
     }
   }
 
+  activate() {
+    this.active = true;
+  }
+  deactivate() {
+    this.active = false;
+  }
+  getIsActive() {
+    return this.active;
+  }
+
   update(..._args: UpdateEntityArgs) {
+    if (!this.active) return;
     this.position.y += this.velocity.y;
     this.position.x += this.velocity.x;
   }

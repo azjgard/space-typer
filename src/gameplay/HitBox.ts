@@ -1,8 +1,4 @@
-import Entity, {
-  DrawEntityArgs,
-  IEntityOptions,
-  UpdateEntityArgs,
-} from "./entities/entity";
+import Entity, { IEntityOptions, UpdateEntityArgs } from "./entities/entity";
 
 interface IHitBoxOptions extends IEntityOptions {
   passthroughEntityIds?: Set<string>;
@@ -35,8 +31,8 @@ export default class Hitbox extends Entity {
     this.hitLift = options.hitLift || 1;
   }
 
-  draw(...args: DrawEntityArgs) {
-    super.draw(...args);
+  draw() {
+    super.draw();
   }
 
   update(...args: UpdateEntityArgs) {

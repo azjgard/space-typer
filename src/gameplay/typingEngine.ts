@@ -78,12 +78,12 @@ const getWordGenerationOptionsByLevel = (
   // TODO: custom options per level
   return {
     count: level,
-    length: 3,
+    length: 1,
   };
 };
 
 const handleIncorrectKey = (keyTyped: string) => {
-  console.info(`Incorrect key typed: ${keyTyped}`);
+  // console.info(`Incorrect key typed: ${keyTyped}`);
 };
 
 interface WordObject {
@@ -158,7 +158,7 @@ export const createTypingEngine = () => {
     debug.log({
       message: "Initializing level",
       level,
-      activeWordObjects: state.activeWordObjects,
+      activeWordObjects: state.activeWordObjects.map(({ id }) => id),
     });
 
     debug.execute(() => {
@@ -187,11 +187,9 @@ export const createTypingEngine = () => {
   ) => {
     const typedFullWord = typedWord.length === wordObject.word.length;
     if (typedFullWord) {
-      const i = state.activeWordObjects.findIndex(
-        (activeWordObject) => activeWordObject.id === wordObject.id
+      state.activeWordObjects = state.activeWordObjects.filter(
+        (awo) => awo.id !== wordObject.id
       );
-      state.activeWordObjects.splice(i, 1);
-
       registeredEvents.typedFullWord.forEach((cb) =>
         cb({ ...state, typedFullWordId: wordObject.id })
       );
@@ -222,8 +220,6 @@ export const createTypingEngine = () => {
 
     // Update the DOM element to highlight the correct characters
     debug.execute(() => {
-      debug.info(`Correct character!`);
-
       const e = document.querySelector(`#${util.idToDomId(wordObject.id)}`);
       if (!e) {
         throw new Error("Couldn't find element");
@@ -261,7 +257,6 @@ export const createTypingEngine = () => {
         return;
       }
 
-      // TODO: check to see if the key matches the next letter in the current target word
       if (key === state.nextExpectedCharacter) {
         const obj = state.activeWordObjects.find(
           ({ id }) => id === state.currentTargetId
