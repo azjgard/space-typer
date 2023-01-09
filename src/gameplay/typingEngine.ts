@@ -153,6 +153,8 @@ export const createTypingEngine = () => {
       state.activeWordFirstLetterToIdMap.set(firstLetter, activeWordObject.id);
     });
 
+    console.log("state.activeWordObjects", state.activeWordObjects);
+
     registeredEvents.initializeLevel.forEach((cb) => cb(state));
 
     debug.log({
@@ -181,35 +183,39 @@ export const createTypingEngine = () => {
     });
   };
 
+  const handleWordRemoval = (id: string) => {
+    state.activeWordObjects = state.activeWordObjects.filter(
+      (awo) => awo.id !== id
+    );
+    registeredEvents.typedFullWord.forEach((cb) =>
+      cb({ ...state, typedFullWordId: id })
+    );
+
+    resetWordState();
+
+    if (state.activeWordObjects.length === 0) {
+      initializeLevel(state.currentLevel + 1);
+    }
+
+    // Remove the associated DOM element
+    debug.execute(() => {
+      const e = document.querySelector(`#${util.idToDomId(id)}`);
+      if (!e) {
+        throw new Error("Couldn't find element");
+      }
+      e.remove();
+    });
+
+    return;
+  };
+
   const updateCurrentlyTypedWord = (
     wordObject: WordObject,
     typedWord: string
   ) => {
     const typedFullWord = typedWord.length === wordObject.word.length;
     if (typedFullWord) {
-      state.activeWordObjects = state.activeWordObjects.filter(
-        (awo) => awo.id !== wordObject.id
-      );
-      registeredEvents.typedFullWord.forEach((cb) =>
-        cb({ ...state, typedFullWordId: wordObject.id })
-      );
-
-      resetWordState();
-
-      if (state.activeWordObjects.length === 0) {
-        initializeLevel(state.currentLevel + 1);
-      }
-
-      // Remove the associated DOM element
-      debug.execute(() => {
-        const e = document.querySelector(`#${util.idToDomId(wordObject.id)}`);
-        if (!e) {
-          throw new Error("Couldn't find element");
-        }
-        e.remove();
-      });
-
-      return;
+      handleWordRemoval(wordObject.id);
     }
 
     state.currentTypedWord = typedWord;
@@ -282,6 +288,10 @@ export const createTypingEngine = () => {
       callback: (arg: TypingEngineEvents[E]) => void
     ) {
       registeredEvents[e].push(callback);
+    },
+    removeWord: (wordId: string) => {
+      console.log("wordId", wordId);
+      return handleWordRemoval(wordId);
     },
   };
 };

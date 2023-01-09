@@ -82,6 +82,8 @@ export default class Player extends Entity {
         path: shipHealth4,
       },
     });
+
+    console.log("this.health", this.health);
   }
 
   update(...args: any[]) {
@@ -128,8 +130,12 @@ export default class Player extends Entity {
         : 0;
   }
 
-  public setHealth(cb: (health: number) => number) {
-    this.health = cb(this.health);
+  damage(amount = 1) {
+    this.setHealth(Math.max(this.health - amount, 0));
+  }
+
+  private setHealth(health: number) {
+    this.health = health;
 
     // TODO: animate the transition between sprites
 

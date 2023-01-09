@@ -21,6 +21,7 @@ export const createHealthManager = (game: Game) => {
     },
     damage: (amount: number = 1) => {
       numberOfHearts -= amount;
+      return numberOfHearts > 0;
     },
   };
 };

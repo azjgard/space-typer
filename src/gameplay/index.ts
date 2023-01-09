@@ -6,6 +6,8 @@ import { DEBUG_GAME } from "../../config";
 import Enemy1 from "./entities/enemy1";
 import { createHealthManager } from "./healthManager";
 import Player from "./entities/player";
+import Enemy from "./entities/enemy";
+import Entity from "./entities/entity";
 
 const debug = createDebugger(DEBUG_GAME);
 
@@ -23,6 +25,12 @@ app.appendChild(canvas);
 const enemyIdFromWordId = (wordId: string) => `enemy-${wordId}`;
 
 export function initGameplay() {
+  const endEntity = game.createEntity(Entity, {
+    id: "endEntity",
+    position: { x: 0, y: 0 },
+    size: { width: 120, height: game.canvas.height },
+  });
+
   const typingEngine = createTypingEngine();
 
   typingEngine.on("initializeLevel", async function initializeLevel(state) {
@@ -42,6 +50,7 @@ export function initGameplay() {
         active: false,
         position: { x: game.canvas.width, y: 30 + i * (Enemy1.height + 30) },
         word: awo.word,
+        endEntity,
       });
       entityIds.push(entityId);
     }
@@ -56,7 +65,7 @@ export function initGameplay() {
   typingEngine.on("typedFullWord", function destroyEnemy(state) {
     const destroyedEnemy = entities[enemyIdFromWordId(state.typedFullWordId)];
     if (!destroyedEnemy) {
-      throw new Error("Can't destroy enemy that doesn't exist");
+      return;
     }
 
     game.removeEntity(destroyedEnemy);
@@ -97,12 +106,30 @@ export function initGameplay() {
   let timeOld = 0;
   let delta = 0;
   const update = (delta: number) => {
+    if (!game.getIsActive()) return;
+
     Object.entries(entities).forEach(([, entity]) => {
       entity.update(entities, delta);
+      if (entity instanceof Enemy) {
+        const reachedEnd = entity.isCollidingWith(endEntity);
+        if (reachedEnd) {
+          entity.die();
+          player.damage();
+          game.removeEntity(entity);
+          typingEngine.removeWord(entity.id.replace("enemy-", ""));
+
+          const hasHealthStill = healthManager.damage();
+          if (!hasHealthStill) {
+            gameOver();
+          }
+        }
+      }
     });
   };
 
   const render = (timeNow = 0) => {
+    if (!game.getIsActive()) return;
+
     context.clearRect(0, 0, canvas.width, canvas.height);
     requestAnimationFrame(render);
 
@@ -116,6 +143,15 @@ export function initGameplay() {
     healthManager.draw();
   };
 
-  setInterval(() => update(0), FRAME_SIZE_MS);
+  game.start();
+
+  const updateInterval = setInterval(() => update(delta), FRAME_SIZE_MS);
   render();
+
+  function gameOver() {
+    // TODO: real game over
+    clearInterval(updateInterval);
+    document.body.removeChild(app);
+    setTimeout(() => alert("Game over!"), 20);
+  }
 }

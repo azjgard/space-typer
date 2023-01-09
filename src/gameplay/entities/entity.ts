@@ -1,7 +1,7 @@
 import * as uuid from "uuid";
 import { Game } from "../game";
 import ImageManager from "../ImageManager";
-import { drawImage } from "../lib";
+import { drawImage, entitiesColliding } from "../lib";
 
 export interface IGameObject {
   game: Game;
@@ -93,7 +93,7 @@ export default class Entity implements IEntityWithGame {
   acceleration;
   velocity;
 
-  private active: boolean = true;
+  protected active: boolean = true;
 
   fillStyle;
   strokeStyle;
@@ -214,6 +214,10 @@ export default class Entity implements IEntityWithGame {
     if (!this.active) return;
     this.position.y += this.velocity.y;
     this.position.x += this.velocity.x;
+  }
+
+  isCollidingWith(entity: Entity) {
+    return entitiesColliding(this, entity);
   }
 
   private drawImage(args: DrawImageArgs) {

@@ -74,3 +74,20 @@ export function drawImage(args: IDrawImageArgs) {
 
   context.restore();
 }
+
+interface EntityToCheckCollisionFor {
+  position: { x: number; y: number };
+  size: { width: number; height: number };
+}
+
+export function entitiesColliding(
+  entity1: EntityToCheckCollisionFor,
+  entity2: EntityToCheckCollisionFor
+) {
+  return (
+    entity1.position.x <= entity2.position.x + entity2.size.width &&
+    entity1.position.x + entity1.size.width >= entity2.position.x &&
+    entity1.position.y <= entity2.position.y + entity2.size.height &&
+    entity1.position.y + entity1.size.height >= entity2.position.y
+  );
+}

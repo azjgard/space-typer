@@ -1,21 +1,19 @@
-import Entity, { IEntityOptions } from "./entity";
 import enemySpritesheet from "../../assets/sprites/enemies/ship-spritesheet.png";
 import { generateSinWave } from "../utils";
+import Enemy, { IEnemyOptions } from "./enemy";
 
-type IEnemyOptions = Omit<IEntityOptions, "type"> & {
-  word: string;
-};
+interface IEnemy1Options extends IEnemyOptions {}
 
-export default class Enemy1 extends Entity {
+export default class Enemy1 extends Enemy {
   public static width = 64;
   public static height = 64;
-  public static startingVelocity = -1;
+  public static startingVelocity = -6;
 
   initialPosition: { x: number; y: number } | null;
 
   wave = generateSinWave();
 
-  constructor(options: IEnemyOptions) {
+  constructor(options: IEnemy1Options) {
     super({
       ...options,
       type: "enemy-1",
@@ -30,7 +28,6 @@ export default class Enemy1 extends Entity {
       },
       text: {
         value: options.word,
-        // getPosition: (e) => ({ x: e.position.x, y: e.position.y }),
         fillStyle: "white",
         font: "32px serif",
       },
