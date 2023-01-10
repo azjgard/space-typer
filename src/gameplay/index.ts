@@ -104,12 +104,6 @@ export function initGameplay() {
         fillStyle: ENEMY_TEXT_COLOR_DEFAULT,
       },
     ]);
-
-    // TODO: replace this with a better animation
-    targetedEnemy.fillStyle = "red";
-    setTimeout(() => {
-      targetedEnemy.fillStyle = undefined;
-    }, (FRAME_SIZE_MS * 60) / 10);
   });
 
   typingEngine.start();

@@ -198,7 +198,10 @@ export default class Entity implements IEntityWithGame {
 
     if (this.text) {
       const textWidth = this.computeTextWidth();
-      this.drawText(this.position.x + textWidth / 2, this.position.y);
+      this.drawText(
+        this.position.x + this.size.width / 2 - textWidth / 2,
+        this.position.y
+      );
     }
   }
 
