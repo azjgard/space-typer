@@ -1,3 +1,7 @@
+import {
+  ENEMY_TEXT_COLOR_DEFAULT,
+  ENEMY_TEXT_FONT_DEFAULT,
+} from "../../../config";
 import enemySpritesheet from "../../assets/sprites/enemies/ship-spritesheet.png";
 import { generateSinWave } from "../utils";
 import Enemy, { IEnemyOptions } from "./enemy";
@@ -28,8 +32,8 @@ export default class Enemy1 extends Enemy {
       },
       text: {
         value: options.word,
-        fillStyle: "white",
-        font: "32px serif",
+        fillStyle: ENEMY_TEXT_COLOR_DEFAULT,
+        font: ENEMY_TEXT_FONT_DEFAULT,
       },
       size: { width: Enemy1.width, height: Enemy1.height },
       velocity: { x: Enemy1.startingVelocity, y: 0 },

@@ -1,7 +1,13 @@
 import { game } from "./game";
 import { createTypingEngine } from "./typingEngine";
 import createDebugger from "../debug";
-import { DEBUG_GAME } from "../../config";
+import {
+  DEBUG_GAME,
+  ENEMY_TEXT_COLOR_DEFAULT,
+  ENEMY_TEXT_COLOR_TYPED,
+  ENEMY_TEXT_FONT_DEFAULT,
+  ENEMY_TEXT_FONT_TYPED,
+} from "../../config";
 
 import Enemy1 from "./entities/enemy1";
 import { createHealthManager } from "./healthManager";
@@ -15,7 +21,7 @@ export const DEBUG = true;
 export const UPDATE_INTERVAL_MS = 16.66; // 60 fps
 const FRAME_SIZE_MS = 1000 / 60;
 
-const { entities, canvas, context } = game;
+const { entities, enemies, canvas, context } = game;
 
 export const GROUND_SIZE = { height: 75, width: canvas.width };
 
@@ -78,10 +84,26 @@ export function initGameplay() {
       return;
     }
 
-    const targetedEnemy = entities[enemyIdFromWordId(state.currentTargetId)];
+    const targetedEnemy = enemies[enemyIdFromWordId(state.currentTargetId)];
     if (!targetedEnemy) {
       throw new Error("Can't attack enemy that doesn't exist");
     }
+
+    const fullWord = targetedEnemy.word;
+    const typedWord = state.currentTypedWord;
+
+    targetedEnemy.setText([
+      {
+        font: ENEMY_TEXT_FONT_TYPED,
+        value: typedWord,
+        fillStyle: ENEMY_TEXT_COLOR_TYPED,
+      },
+      {
+        font: ENEMY_TEXT_FONT_DEFAULT,
+        value: fullWord.replace(typedWord, ""),
+        fillStyle: ENEMY_TEXT_COLOR_DEFAULT,
+      },
+    ]);
 
     // TODO: replace this with a better animation
     targetedEnemy.fillStyle = "red";

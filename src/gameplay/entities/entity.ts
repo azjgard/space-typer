@@ -98,7 +98,7 @@ export default class Entity implements IEntityWithGame {
   fillStyle;
   strokeStyle;
   sprite: IEntity["sprite"];
-  text;
+  text: IText[] | undefined;
 
   game;
 
@@ -126,17 +126,19 @@ export default class Entity implements IEntityWithGame {
       this.active = options.active;
     }
 
-    this.text = Array.isArray(options.text)
-      ? options.text
-      : options.text
-      ? [options.text]
-      : undefined;
+    if (options.text) {
+      this.setText(options.text);
+    }
 
     if (options.sprite) {
       this.setSprite(options.sprite);
     }
 
     this.game = options.game;
+  }
+
+  setText(text: IText | IText[] | null | undefined) {
+    this.text = Array.isArray(text) ? text : text ? [text] : undefined;
   }
 
   setSprite(options: ISpriteOptions) {
