@@ -290,5 +290,8 @@ export const createTypingEngine = () => {
     removeWord: (wordId: string) => {
       return handleWordRemoval(wordId);
     },
+    resetWord: () => {
+      resetWordState();
+    },
   };
 };

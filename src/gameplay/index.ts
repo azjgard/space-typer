@@ -99,6 +99,11 @@ export function initGameplay() {
       throw new Error("Can't attack enemy that doesn't exist");
     }
 
+    if (!targetedEnemy.getIsActive()) {
+      typingEngine.resetWord();
+      return;
+    }
+
     const fullWord = targetedEnemy.word;
     const typedWord = state.currentTypedWord;
 
@@ -114,6 +119,11 @@ export function initGameplay() {
         fillStyle: ENEMY_TEXT_COLOR_DEFAULT,
       },
     ]);
+
+    targetedEnemy.fillStyle = "red";
+    setTimeout(() => {
+      targetedEnemy.fillStyle = undefined;
+    }, (FRAME_SIZE_MS * 60) / 10);
   });
 
   typingEngine.start();
