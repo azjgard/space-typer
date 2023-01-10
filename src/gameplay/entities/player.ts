@@ -82,8 +82,6 @@ export default class Player extends Entity {
         path: shipHealth4,
       },
     });
-
-    console.log("this.health", this.health);
   }
 
   update(...args: any[]) {

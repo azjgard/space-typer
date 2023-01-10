@@ -153,8 +153,6 @@ export const createTypingEngine = () => {
       state.activeWordFirstLetterToIdMap.set(firstLetter, activeWordObject.id);
     });
 
-    console.log("state.activeWordObjects", state.activeWordObjects);
-
     registeredEvents.initializeLevel.forEach((cb) => cb(state));
 
     debug.log({
@@ -290,7 +288,6 @@ export const createTypingEngine = () => {
       registeredEvents[e].push(callback);
     },
     removeWord: (wordId: string) => {
-      console.log("wordId", wordId);
       return handleWordRemoval(wordId);
     },
   };

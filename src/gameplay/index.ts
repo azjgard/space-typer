@@ -73,7 +73,9 @@ export function initGameplay() {
 
   typingEngine.on("updateCurrentlyTypedWord", function attackEnemy(state) {
     if (!state.currentTargetId) {
-      throw new Error("Can't attack enemy without a currentTargetId");
+      // This is a valid scenario (apparently?) when an enemy who is in the middle
+      // of being attacked ends up running into the end barrier
+      return;
     }
 
     const targetedEnemy = entities[enemyIdFromWordId(state.currentTargetId)];
@@ -152,6 +154,9 @@ export function initGameplay() {
     // TODO: real game over
     clearInterval(updateInterval);
     document.body.removeChild(app);
-    setTimeout(() => alert("Game over!"), 20);
+    setTimeout(() => {
+      console.log("Game over!");
+      initGameplay();
+    }, 20);
   }
 }
