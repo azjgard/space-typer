@@ -14,6 +14,7 @@ import { createHealthManager } from "./healthManager";
 import Player from "./entities/player";
 import Enemy from "./entities/enemy";
 import Entity from "./entities/entity";
+import { traverseUnitCircle } from "./utils";
 
 const debug = createDebugger(DEBUG_GAME);
 
@@ -48,13 +49,22 @@ export function initGameplay() {
     });
 
     let entityIds: string[] = [];
+
+    const coordinateCalculator = traverseUnitCircle(Math.PI, 100, 300, {
+      transform: ({ x, y }) => ({
+        x: x + game.canvas.width / 2,
+        y: y + game.canvas.height / 2,
+      }),
+    });
     for (let i = 0; i < state.activeWordObjects.length; i++) {
       const awo = state.activeWordObjects[i];
       const entityId = enemyIdFromWordId(awo.id);
+
+      // const y = 30 + i * (Enemy1.height + 30);
       game.createEntity(Enemy1, {
         id: entityId,
         active: false,
-        position: { x: game.canvas.width, y: 30 + i * (Enemy1.height + 30) },
+        position: { x: game.canvas.width, y: coordinateCalculator.next().y },
         word: awo.word,
         endEntity,
       });
@@ -64,7 +74,7 @@ export function initGameplay() {
     // Stagger activation of enemies in the wave
     for (let i = 0; i < entityIds.length; i++) {
       entities[entityIds[i]].activate();
-      await new Promise((r) => setTimeout(r, Math.random() * 500 + 200));
+      await new Promise((r) => setTimeout(r, Math.random() * 800 + 1200));
     }
   });
 
