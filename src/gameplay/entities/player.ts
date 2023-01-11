@@ -55,6 +55,7 @@ const ENGINE_SPRITESHEET_FRAMES: {
 import { generateSinWave } from "../utils";
 import { drawImage } from "../lib";
 import ImageManager from "../ImageManager";
+import { FRAME_SIZE_MS } from "..";
 
 interface IPlayerOptions extends Omit<IEntityOptions, "type" | "id"> {}
 
@@ -130,6 +131,11 @@ export default class Player extends Entity {
 
   damage(amount = 1) {
     this.setHealth(Math.max(this.health - amount, 0));
+
+    this.fillStyle = "red";
+    setTimeout(() => {
+      this.fillStyle = undefined;
+    }, (FRAME_SIZE_MS * 60) / 10);
   }
 
   private setHealth(health: number) {

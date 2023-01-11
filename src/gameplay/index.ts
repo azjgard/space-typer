@@ -20,7 +20,7 @@ const debug = createDebugger(DEBUG_GAME);
 
 export const DEBUG = true;
 export const UPDATE_INTERVAL_MS = 16.66; // 60 fps
-const FRAME_SIZE_MS = 1000 / 60;
+export const FRAME_SIZE_MS = 1000 / 60;
 
 const { entities, enemies, canvas, context } = game;
 

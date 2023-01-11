@@ -6,7 +6,26 @@ const debug = createDebugger(DEBUG_TYPING_ENGINE);
 
 const debugContainer = document.getElementById("debug");
 
-const KEYS_TO_PRACTICE = ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";"];
+const KEYS_TO_PRACTICE = [
+  "a",
+  "s",
+  "d",
+  "f",
+  "g",
+  "h",
+  "j",
+  "k",
+  "l",
+  ";",
+  //
+  "q",
+  "w",
+  "e",
+  "r",
+  "t",
+  "y",
+  "u",
+];
 
 type GenerateWordsOptions = {
   count: number;
@@ -77,7 +96,7 @@ const getWordGenerationOptionsByLevel = (
 ): GenerateWordsOptions => {
   // TODO: custom options per level
   return {
-    count: level * 2,
+    count: level * 100,
     length: 4,
   };
 };
