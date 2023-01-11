@@ -10,6 +10,7 @@ const KEYS_TO_PRACTICE = [
   "a",
   "s",
   "d",
+  "u",
   "f",
   "g",
   "h",
@@ -24,7 +25,6 @@ const KEYS_TO_PRACTICE = [
   "r",
   "t",
   "y",
-  "u",
 ];
 
 type GenerateWordsOptions = {
@@ -55,7 +55,7 @@ const generateWords = (
   }
 
   let availableFirstLetters = [...possibleKeys];
-  for (let wordIndex = 0; wordIndex < options.count; wordIndex++) {
+  for (let wordIndex = 0; wordIndex < wordCount; wordIndex++) {
     let word = "";
     const wordLength =
       "length" in options
@@ -285,7 +285,9 @@ export const createTypingEngine = () => {
           ({ id }) => id === state.currentTargetId
         );
         if (!obj) {
-          throw new Error("Couldn't find active word");
+          console.error("Couldn't find active word");
+          resetWordState();
+          return;
         }
         updateCurrentlyTypedWord(obj, state.currentTypedWord + key);
       } else {

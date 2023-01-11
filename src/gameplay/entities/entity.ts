@@ -103,18 +103,9 @@ export default class Entity implements IEntityWithGame {
   game;
 
   constructor(options: IEntityOptions) {
-    if (!options.position) {
-      console.error("Cannot initialize an entity without a position", options);
-      throw new Error("Cannot initialize an entity without a position");
-    }
-    if (!options.size) {
-      console.error("Cannot initialize an entity without a size", options);
-      throw new Error("Cannot initialize an entity without a size");
-    }
-
     this.id = options.id || uuid.v4();
-    this.position = options.position;
-    this.size = options.size;
+    this.position = options.position || { x: 0, y: 0 };
+    this.size = options.size || { width: 0, height: 0 };
     this.acceleration = options.acceleration || { x: 0, y: 0 };
     this.velocity = options.velocity || { x: 0, y: 0 };
     this.fillStyle = options.fillStyle || undefined;

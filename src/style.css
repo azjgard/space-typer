@@ -1,5 +1,6 @@
 * {
   margin: 0;
+  font-family: "VT323", monospace;
 }
 
 ul {
@@ -26,6 +27,21 @@ body {
   width: 100vw;
   height: 100vh;
   background-color: black;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+
+.game-container {
+  /* should match the value for canvas width in config.ts */
+  width: 1300px;
+  height: 800px;
+  margin: auto;
+  position: relative;
 }
 
 #game {

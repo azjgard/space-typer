@@ -10,7 +10,7 @@ import {
 } from "../../config";
 
 import Enemy1 from "./entities/enemy1";
-import { createHealthManager } from "./healthManager";
+import HealthManager from "./entities/healthManager";
 import Player from "./entities/player";
 import Enemy from "./entities/enemy";
 import Entity from "./entities/entity";
@@ -128,7 +128,9 @@ export function initGameplay() {
 
   typingEngine.start();
 
-  const healthManager = createHealthManager(game);
+  const healthManager = game.createEntity(HealthManager, {
+    id: "health-manager",
+  });
 
   const player = game.createEntity(Player, {
     size: {
