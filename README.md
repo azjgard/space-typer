@@ -1,10 +1,10 @@
 ## Immediate Features
 
-- [ ] Truly endless play
+- [x] Truly endless play
   - [x] Enemy spawns should follow a rough sine curve
-  - [ ] Typing engine should support reusing first letters in a wave
-- [ ] Enemies should follow a sine curve
-- [ ] Points
+  - [x] Typing engine should support reusing first letters in a wave
+- [x] Enemies should follow a sine curve
+- [x] Points
 - [ ] Menus
 
   - [ ] Start menu
