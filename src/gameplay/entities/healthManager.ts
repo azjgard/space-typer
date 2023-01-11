@@ -8,9 +8,9 @@ const HEART_SIZE = 40;
 
 export default class HealthManager extends Entity {
   public static MAX_HEALTH = 4;
+  public static OFFSET = HEART_SIZE;
 
   health = HealthManager.MAX_HEALTH;
-  offset = HEART_SIZE;
 
   draw() {
     super.draw();
@@ -22,7 +22,7 @@ export default class HealthManager extends Entity {
     }
 
     for (let i = 0; i < this.health; i++) {
-      const x = 0 + i * 20 + this.offset * (i + 1);
+      const x = this.position.x + i * 20 + HealthManager.OFFSET * (i + 1);
       const y = 20;
       drawImage({
         image,

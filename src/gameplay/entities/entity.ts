@@ -10,7 +10,7 @@ export interface IGameObject {
 export type DrawEntityArgs = [CanvasRenderingContext2D];
 export type UpdateEntityArgs = [{ [entityId: string]: Entity }, number];
 
-interface IText {
+export interface IText {
   value: string;
   font: string;
   fillStyle: string;

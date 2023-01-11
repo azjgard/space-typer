@@ -16,4 +16,8 @@ export default abstract class Enemy extends Entity {
   }
 
   die() {}
+
+  getPoints() {
+    return this.word.length;
+  }
 }

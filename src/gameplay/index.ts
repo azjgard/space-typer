@@ -11,6 +11,7 @@ import {
 
 import Enemy1 from "./entities/enemy1";
 import HealthManager from "./entities/healthManager";
+import ScoreManager from "./entities/scoreManager";
 import Player from "./entities/player";
 import Enemy from "./entities/enemy";
 import Entity from "./entities/entity";
@@ -36,6 +37,38 @@ export function initGameplay() {
     id: "endEntity",
     position: { x: 0, y: 0 },
     size: { width: 120, height: game.canvas.height },
+  });
+
+  const healthManager = game.createEntity(HealthManager, {
+    id: "health-manager",
+  });
+
+  const scoreManager = game.createEntity(ScoreManager, {
+    id: "score-manager",
+    position: {
+      x: healthManager.position.x,
+      y: game.canvas.height / 2,
+    },
+    text: ScoreManager.getText("0000"),
+  });
+  game.context.font = scoreManager.text![0].font!;
+  scoreManager.position = {
+    x:
+      healthManager.position.x +
+      game.context.measureText(scoreManager.text![0].value).width / 2 +
+      HealthManager.OFFSET,
+    y: 105,
+  };
+
+  const player = game.createEntity(Player, {
+    size: {
+      width: 100,
+      height: 100,
+    },
+    position: {
+      x: 35,
+      y: game.canvas.height / 2 - 50 / 2,
+    },
   });
 
   const typingEngine = createTypingEngine();
@@ -79,10 +112,12 @@ export function initGameplay() {
   });
 
   typingEngine.on("typedFullWord", function destroyEnemy(state) {
-    const destroyedEnemy = entities[enemyIdFromWordId(state.typedFullWordId)];
+    const destroyedEnemy = enemies[enemyIdFromWordId(state.typedFullWordId)];
     if (!destroyedEnemy) {
       return;
     }
+
+    scoreManager.addPoints(destroyedEnemy.getPoints());
 
     game.removeEntity(destroyedEnemy);
   });
@@ -127,21 +162,6 @@ export function initGameplay() {
   });
 
   typingEngine.start();
-
-  const healthManager = game.createEntity(HealthManager, {
-    id: "health-manager",
-  });
-
-  const player = game.createEntity(Player, {
-    size: {
-      width: 100,
-      height: 100,
-    },
-    position: {
-      x: 35,
-      y: game.canvas.height / 2 - 50 / 2,
-    },
-  });
 
   let timeOld = 0;
   let delta = 0;
