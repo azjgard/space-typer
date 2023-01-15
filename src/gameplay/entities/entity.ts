@@ -212,6 +212,10 @@ export default class Entity implements IEntityWithGame {
     this.position.x += this.velocity.x;
   }
 
+  destroy() {
+    //
+  }
+
   isCollidingWith(entity: Entity) {
     return entitiesColliding(this, entity);
   }

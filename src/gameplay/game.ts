@@ -74,6 +74,8 @@ export function removeEntity<E extends Entity>(entity: E) {
     return;
   }
 
+  entity.destroy();
+
   if (entity instanceof Enemy) {
     delete enemies[entity.id];
   }

@@ -34,7 +34,8 @@ export default abstract class Enemy extends Entity {
     });
   }
 
-  die() {
+  destroy() {
+    super.destroy();
     this.explode();
   }
 

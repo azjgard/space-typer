@@ -1,3 +1,5 @@
+import { Howl } from "howler";
+
 export function absoluteClamp(value: number, clamp: number) {
   const c = Math.abs(clamp);
   if (value < 0) {
@@ -52,4 +54,8 @@ export function* generateSinWave() {
   while (true) {
     yield traverser.next().y;
   }
+}
+
+export function playSound(soundPath: string) {
+  return new Howl({ src: [soundPath] }).play();
 }

@@ -119,7 +119,6 @@ export function initGameplay() {
     }
 
     scoreManager.addPoints(destroyedEnemy.getPoints());
-    destroyedEnemy.die();
     game.removeEntity(destroyedEnemy);
   });
 
@@ -175,7 +174,6 @@ export function initGameplay() {
         const reachedEnd = entity.isCollidingWith(endEntity);
         if (reachedEnd) {
           player.damage();
-          entity.die();
           game.removeEntity(entity);
           typingEngine.removeWord(entity.id.replace("enemy-", ""));
 

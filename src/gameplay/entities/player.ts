@@ -6,6 +6,7 @@ import shipHealth2 from "../../assets/sprites/ship/ship-health-2.png";
 import shipHealth1 from "../../assets/sprites/ship/ship-health-1.png";
 
 import engineSpritesheet from "../../assets/sprites/ship/engine-spritesheet.png";
+import engineFrames from "../../assets/sprites/ship/engine-spritesheet.json";
 
 const healthMap = {
   "4": shipHealth4,
@@ -23,39 +24,15 @@ const SHIP_SPRITE_DEFAULT_SIZE = 48;
 const SHIP_SPRITE_SIZE = SHIP_SPRITE_DEFAULT_SIZE * PLAYER_SCALE;
 
 // This should match the dimensions of a single sprite in the engine spritesheet
-const ENGINE_SPRITE_DEFAULT_SIZE = 48;
-const ENGINE_SPRITE_SIZE = ENGINE_SPRITE_DEFAULT_SIZE * PLAYER_SCALE;
 const ENGINE_SPRITE_FRAME_SIZE = 48;
 const ENGINE_SPRITE_OFFSETS = {
   x: -26,
   y: -1,
 };
-const ENGINE_SPRITESHEET_FRAMES: {
-  sx: number;
-  sy: number;
-}[] = [
-  {
-    sx: 0,
-    sy: 0,
-  },
-  {
-    sx: 0,
-    sy: ENGINE_SPRITE_FRAME_SIZE,
-  },
-  {
-    sx: 0,
-    sy: ENGINE_SPRITE_FRAME_SIZE * 2,
-  },
-  {
-    sx: 0,
-    sy: ENGINE_SPRITE_FRAME_SIZE * 3,
-  },
-];
 
 import { generateSinWave } from "../utils";
-import { drawImage } from "../lib";
-import ImageManager from "../ImageManager";
 import { FRAME_SIZE_MS } from "..";
+import Animation from "./animation";
 
 interface IPlayerOptions extends Omit<IEntityOptions, "type" | "id"> {}
 
@@ -66,9 +43,7 @@ export default class Player extends Entity {
 
   wave = generateSinWave();
 
-  engineCurrentFrame = 0;
-  engineCurrentFrameWait = 0;
-  engineFrameWaitSize = 4;
+  engineAnimation;
 
   constructor(options: IPlayerOptions) {
     super({
@@ -83,50 +58,31 @@ export default class Player extends Entity {
         path: shipHealth4,
       },
     });
+
+    this.engineAnimation = this.game.createEntity(Animation, {
+      id: "player-engine-animation",
+      position: this.position,
+      size: this.size,
+      spritesheetPath: engineSpritesheet,
+      spritesheetFrames: engineFrames.map((f) => ({
+        ...f,
+        sWidth: ENGINE_SPRITE_FRAME_SIZE,
+        sHeight: ENGINE_SPRITE_FRAME_SIZE,
+      })),
+      frameDelay: 4,
+      loop: true,
+    });
   }
 
   update(...args: any[]) {
     this.velocity.y = (this.wave.next().value as number) * 1;
+
     super.update(args[0], args[1]);
-  }
 
-  draw() {
-    super.draw();
-    this.drawEngine();
-  }
-
-  drawEngine() {
-    const image = ImageManager.getSync(engineSpritesheet);
-    if (!image) return;
-
-    drawImage({
-      image,
+    this.engineAnimation.position = {
       x: this.position.x + ENGINE_SPRITE_OFFSETS.x,
       y: this.position.y - ENGINE_SPRITE_OFFSETS.y,
-      width: ENGINE_SPRITE_SIZE,
-      height: ENGINE_SPRITE_SIZE,
-      deg: 0,
-      flip: false,
-      flop: false,
-      center: false,
-      sheet: {
-        sWidth: ENGINE_SPRITE_FRAME_SIZE,
-        sHeight: ENGINE_SPRITE_FRAME_SIZE,
-        sx: ENGINE_SPRITESHEET_FRAMES[this.engineCurrentFrame].sx,
-        sy: ENGINE_SPRITESHEET_FRAMES[this.engineCurrentFrame].sy,
-      },
-
-      context: this.game.context,
-    });
-
-    this.engineCurrentFrameWait++;
-    if (this.engineCurrentFrameWait < this.engineFrameWaitSize) return;
-
-    this.engineCurrentFrameWait = 0;
-    this.engineCurrentFrame =
-      this.engineCurrentFrame < ENGINE_SPRITESHEET_FRAMES.length - 1
-        ? this.engineCurrentFrame + 1
-        : 0;
+    };
   }
 
   damage(amount = 1) {
