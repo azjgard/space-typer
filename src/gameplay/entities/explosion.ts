@@ -1,7 +1,11 @@
 import Entity, { IEntityOptions } from "./entity";
 
+import { Howl } from "howler";
+
 import explosionSpritesheet from "../../assets/sprites/explosion-round-spritesheet.png";
 import explosionFrames from "../../assets/sprites/explosion-round-spritesheet.json";
+import explosionSound from "../../assets/sounds/explosion.wav";
+
 import ImageManager from "../ImageManager";
 import { drawImage } from "../lib";
 
@@ -34,6 +38,9 @@ export default class Explosion extends Entity {
     super(options);
     this.loop = options.loop ?? false;
     this.onEnd = options.onEnd;
+    new Howl({
+      src: [explosionSound],
+    }).play();
   }
 
   draw() {
