@@ -180,7 +180,7 @@ export function initGameplay() {
 
           const hasHealthStill = healthManager.damage();
           if (!hasHealthStill) {
-            gameOver();
+            gameOver(scoreManager.getScore());
           }
         }
       }
@@ -208,10 +208,11 @@ export function initGameplay() {
   const updateInterval = setInterval(() => update(delta), FRAME_SIZE_MS);
   render();
 
-  function gameOver() {
-    // TODO: real game over
+  function gameOver(score: number) {
     clearInterval(updateInterval);
     document.body.removeChild(app);
+
+    alert(`Game over! Your score was ${score}!`);
     setTimeout(() => {
       console.log("Game over!");
       initGameplay();

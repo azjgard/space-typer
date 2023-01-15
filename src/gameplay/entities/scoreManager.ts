@@ -30,4 +30,8 @@ export default class ScoreManager extends Entity {
     this.score += amount;
     this.text = ScoreManager.getText(this.score);
   }
+
+  getScore() {
+    return this.score;
+  }
 }

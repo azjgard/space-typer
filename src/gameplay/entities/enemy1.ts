@@ -11,7 +11,7 @@ interface IEnemy1Options extends IEnemyOptions {}
 export default class Enemy1 extends Enemy {
   public static width = 64;
   public static height = 64;
-  public static startingVelocity = -2.8;
+  public static startingVelocity = -1.2;
 
   initialPosition: { x: number; y: number } | null;
 
@@ -24,8 +24,8 @@ export default class Enemy1 extends Enemy {
       sprite: {
         path: enemySpritesheet,
         sheet: {
-          sx: 0,
-          sy: 0,
+          sx: 32 * 2,
+          sy: 32 * 2,
           sWidth: 32,
           sHeight: 32,
         },
