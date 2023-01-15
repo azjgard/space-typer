@@ -9,14 +9,14 @@ import {
   ENEMY_TEXT_FONT_TYPED,
 } from "../../config";
 
-import Enemy1 from "./entities/enemy1";
+import Enemy1 from "./entities/enemies/enemy1";
 import HealthManager from "./entities/healthManager";
 import ScoreManager from "./entities/scoreManager";
 import Player from "./entities/player";
 import Enemy from "./entities/enemy";
 import Entity from "./entities/entity";
 import { traverseUnitCircle } from "./utils";
-import Explosion from "./entities/explosion";
+import Explosion from "./entities/animations/explosion";
 
 const debug = createDebugger(DEBUG_GAME);
 

@@ -1,5 +1,5 @@
 import Entity, { IEntityOptions } from "./entity";
-import Explosion from "./explosion";
+import Explosion from "./animations/explosion";
 
 export type IEnemyOptions = IEntityOptions & {
   word: string;
@@ -28,9 +28,7 @@ export default abstract class Enemy extends Entity {
         width: size,
         height: size,
       },
-      onEnd: (explosion) => {
-        this.game.removeEntity(explosion);
-      },
+      onEnd: this.game.removeEntity,
     });
   }
 

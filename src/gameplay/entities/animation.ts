@@ -2,16 +2,7 @@ import ImageManager from "../ImageManager";
 import { drawImage } from "../lib";
 import Entity, { IEntity, IEntityOptions } from "./entity";
 
-/*
- * - sheet
- * - frames
- * - frame size
- * - frame delay (defaults 0)
- * - loop (defaults false - if false, then destroy at end)
- * ... other entity args
- */
-
-interface IAnimationOptions extends IEntityOptions {
+export interface IAnimationOptions extends IEntityOptions {
   spritesheetPath: string;
   spritesheetFrames: {
     sx: number;
