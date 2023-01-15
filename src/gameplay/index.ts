@@ -16,6 +16,7 @@ import Player from "./entities/player";
 import Enemy from "./entities/enemy";
 import Entity from "./entities/entity";
 import { traverseUnitCircle } from "./utils";
+import Explosion from "./entities/explosion";
 
 const debug = createDebugger(DEBUG_GAME);
 
@@ -118,7 +119,7 @@ export function initGameplay() {
     }
 
     scoreManager.addPoints(destroyedEnemy.getPoints());
-
+    destroyedEnemy.die();
     game.removeEntity(destroyedEnemy);
   });
 
@@ -173,8 +174,8 @@ export function initGameplay() {
       if (entity instanceof Enemy) {
         const reachedEnd = entity.isCollidingWith(endEntity);
         if (reachedEnd) {
-          entity.die();
           player.damage();
+          entity.die();
           game.removeEntity(entity);
           typingEngine.removeWord(entity.id.replace("enemy-", ""));
 
@@ -212,7 +213,7 @@ export function initGameplay() {
     clearInterval(updateInterval);
     document.body.removeChild(app);
 
-    alert(`Game over! Your score was ${score}!`);
+    // alert(`Game over! Your score was ${score}!`);
     setTimeout(() => {
       console.log("Game over!");
       initGameplay();

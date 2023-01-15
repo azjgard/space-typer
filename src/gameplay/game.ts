@@ -43,7 +43,7 @@ function emit<E extends keyof GameEvents>(e: E, data: GameEvents[E]) {
 
 function createEntity<E extends Entity, C extends { new (...args: any[]): E }>(
   EntityClass: C,
-  entityArgs?: Omit<ConstructorParameters<C>[0], "game">
+  entityArgs: Omit<ConstructorParameters<C>[0], "game">
 ) {
   const entity = new EntityClass({
     ...entityArgs,

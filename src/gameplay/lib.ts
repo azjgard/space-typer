@@ -5,10 +5,10 @@ interface IDrawImageArgs {
   y: number;
   width: number;
   height: number;
-  deg: number;
-  flip: boolean;
-  flop: boolean;
-  center: boolean;
+  deg?: number;
+  flip?: boolean;
+  flop?: boolean;
+  center?: boolean;
   sheet?: {
     sx: number;
     sy: number;
@@ -18,8 +18,19 @@ interface IDrawImageArgs {
 }
 
 export function drawImage(args: IDrawImageArgs) {
-  let { context, image, x, y, width, height, deg, flip, flop, center, sheet } =
-    args;
+  let {
+    context,
+    image,
+    x,
+    y,
+    width,
+    height,
+    deg = 0,
+    flip = false,
+    flop = false,
+    center = false,
+    sheet,
+  } = args;
 
   context.save();
 
