@@ -12,6 +12,11 @@
   - [ ] Pause menu
 
 - [ ] Sound
+  - [ ] When enemies die
+  - [ ] When game is over
+  - [ ] Background music
+  - [ ] Player engine (low ambient sound in bg)
+  - [ ] When an enemy spawns
 - [ ] Music
 
 ## Follow-up Features
@@ -21,7 +26,6 @@
   - [x] Highlights the next letter as yellow
   - [ ] Fires a missile towards the ship
   - [ ] Ship plays damage animation only when the missile hits
-  - [ ] Ship plays explosion animation when the final missile hits
+  - [x] Ship plays explosion animation when the final missile hits
 - [ ] Additional enemy types
 - [ ] Configure the words you want to practice
-
