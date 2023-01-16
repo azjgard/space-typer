@@ -9,14 +9,17 @@ import {
   ENEMY_TEXT_FONT_TYPED,
 } from "../../config";
 
+import clickSound from "../assets/sounds/click.wav";
+
 import Enemy1 from "./entities/enemies/enemy1";
 import HealthManager from "./entities/healthManager";
 import ScoreManager from "./entities/scoreManager";
 import Player from "./entities/player";
 import Enemy from "./entities/enemy";
 import Entity from "./entities/entity";
-import { traverseUnitCircle } from "./utils";
+import { playSound, traverseUnitCircle } from "./utils";
 import Explosion from "./entities/animations/explosion";
+import initializeGlobalKeyboardEvents from "./globalKeyboard";
 
 const debug = createDebugger(DEBUG_GAME);
 
@@ -34,6 +37,8 @@ app.appendChild(canvas);
 const enemyIdFromWordId = (wordId: string) => `enemy-${wordId}`;
 
 export function initGameplay() {
+  initializeGlobalKeyboardEvents(game);
+
   const endEntity = game.createEntity(Entity, {
     id: "endEntity",
     position: { x: 0, y: 0 },
@@ -118,6 +123,8 @@ export function initGameplay() {
       return;
     }
 
+    playSound(clickSound);
+
     scoreManager.addPoints(destroyedEnemy.getPoints());
     game.removeEntity(destroyedEnemy);
   });
@@ -138,6 +145,8 @@ export function initGameplay() {
       typingEngine.resetWord();
       return;
     }
+
+    playSound(clickSound);
 
     const fullWord = targetedEnemy.word;
     const typedWord = state.currentTypedWord;
@@ -161,7 +170,7 @@ export function initGameplay() {
   let timeOld = 0;
   let delta = 0;
   const update = (delta: number) => {
-    if (!game.getIsActive()) return;
+    if (!game.getIsActive() || game.getIsPaused()) return;
 
     Object.entries(entities).forEach(([, entity]) => {
       entity.update(entities, delta);

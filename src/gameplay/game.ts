@@ -7,6 +7,7 @@ canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
 
 let active = false;
+let paused = false;
 let entities: { [entityId: string]: Entity } = {};
 let enemies: { [enemyId: string]: Enemy } = {};
 
@@ -111,6 +112,10 @@ export const game = {
   getIsActive: () => active,
   start,
   end,
+  togglePaused: () => {
+    paused = !paused;
+  },
+  getIsPaused: () => paused,
 };
 
 export type Game = typeof game;
