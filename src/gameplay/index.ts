@@ -1,4 +1,4 @@
-import { game } from "./game";
+import { createGame } from "./game";
 import { createTypingEngine } from "./typingEngine";
 import createDebugger from "../debug";
 import {
@@ -18,7 +18,6 @@ import Player from "./entities/player";
 import Enemy from "./entities/enemy";
 import Entity from "./entities/entity";
 import { playSound, traverseUnitCircle } from "./utils";
-import Explosion from "./entities/animations/explosion";
 import { initializePauseMenu } from "./keyboard";
 
 const debug = createDebugger(DEBUG_GAME);
@@ -27,19 +26,15 @@ export const DEBUG = true;
 export const UPDATE_INTERVAL_MS = 16.66; // 60 fps
 export const FRAME_SIZE_MS = 1000 / 60;
 
-const { entities, enemies, canvas, context } = game;
-
-export const GROUND_SIZE = { height: 75, width: canvas.width };
-
-const app = document.querySelector("#game")!;
-app.appendChild(canvas);
-
 const enemyIdFromWordId = (wordId: string) => `enemy-${wordId}`;
 
 // TODO: this is a hack to avoid refactoring right now, move this inside of the game
 export let updateInterval: number = 0;
 
 export function initGameplay() {
+  const game = createGame();
+
+  const { entities, enemies, canvas, context } = game;
   initializePauseMenu(game);
 
   const endEntity = game.createEntity(Entity, {
@@ -219,7 +214,6 @@ export function initGameplay() {
   function gameOver(score: number) {
     game.end();
     clearInterval(updateInterval);
-    document.body.removeChild(app);
 
     // alert(`Game over! Your score was ${score}!`);
     setTimeout(() => {
