@@ -19,7 +19,7 @@ import Enemy from "./entities/enemy";
 import Entity from "./entities/entity";
 import { playSound, traverseUnitCircle } from "./utils";
 import Explosion from "./entities/animations/explosion";
-import initializeGlobalKeyboardEvents from "./globalKeyboard";
+import { initializePauseMenu } from "./keyboard";
 
 const debug = createDebugger(DEBUG_GAME);
 
@@ -36,8 +36,11 @@ app.appendChild(canvas);
 
 const enemyIdFromWordId = (wordId: string) => `enemy-${wordId}`;
 
+// TODO: this is a hack to avoid refactoring right now, move this inside of the game
+export let updateInterval: number = 0;
+
 export function initGameplay() {
-  initializeGlobalKeyboardEvents(game);
+  initializePauseMenu(game);
 
   const endEntity = game.createEntity(Entity, {
     id: "endEntity",
@@ -167,6 +170,8 @@ export function initGameplay() {
 
   typingEngine.start();
 
+  // TODO: update and render should be handled by the game
+
   let timeOld = 0;
   let delta = 0;
   const update = (delta: number) => {
@@ -208,10 +213,11 @@ export function initGameplay() {
 
   game.start();
 
-  const updateInterval = setInterval(() => update(delta), FRAME_SIZE_MS);
+  updateInterval = setInterval(() => update(delta), FRAME_SIZE_MS);
   render();
 
   function gameOver(score: number) {
+    game.end();
     clearInterval(updateInterval);
     document.body.removeChild(app);
 

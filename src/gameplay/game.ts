@@ -2,6 +2,8 @@ import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../../config";
 import Enemy from "./entities/enemy";
 import Entity from "./entities/entity";
 
+// TODO: literally all of this needs to be moved inside of a function
+
 const canvas = document.createElement("canvas");
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;

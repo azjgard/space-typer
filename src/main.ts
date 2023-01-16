@@ -1,4 +1,4 @@
 import "./style.css";
-import { initGameplay } from "./gameplay";
+import { initializeStartMenu } from "./gameplay/keyboard";
 
-initGameplay();
+initializeStartMenu();
