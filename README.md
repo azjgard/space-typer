@@ -7,9 +7,13 @@
 - [x] Points
 - [ ] Menus
 
-  - [ ] Start menu
+  - [x] Start menu
   - [ ] Game over menu
-  - [ ] Pause menu
+
+    - [ ] When game over occurs rn, restart happens, but it's buggy because it breaks the menus.
+          All logic in quit button click handler needs to be executed whenever the game ends.
+
+  - [x] Pause menu
 
 - [ ] Sound
   - [ ] When enemies die
