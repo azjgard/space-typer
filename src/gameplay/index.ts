@@ -1,8 +1,8 @@
 import { createGame } from "./game";
 import { createTypingEngine } from "./typingEngine";
-import createDebugger from "../debug";
+// import createDebugger from "../debug";
 import {
-  DEBUG_GAME,
+  // DEBUG_GAME,
   ENEMY_TEXT_COLOR_DEFAULT,
   ENEMY_TEXT_COLOR_TYPED,
   ENEMY_TEXT_FONT_DEFAULT,
@@ -20,7 +20,7 @@ import Entity from "./entities/entity";
 import { playSound, traverseUnitCircle } from "./utils";
 import { initializePauseMenu } from "./keyboard";
 
-const debug = createDebugger(DEBUG_GAME);
+// const _debug = createDebugger(DEBUG_GAME);
 
 export const DEBUG = true;
 export const UPDATE_INTERVAL_MS = 16.66; // 60 fps
@@ -211,7 +211,7 @@ export function initGameplay() {
   updateInterval = setInterval(() => update(delta), FRAME_SIZE_MS);
   render();
 
-  function gameOver(score: number) {
+  function gameOver(_score: number) {
     game.end();
     clearInterval(updateInterval);
 

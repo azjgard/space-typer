@@ -101,7 +101,7 @@ const getWordGenerationOptionsByLevel = (
   };
 };
 
-const handleIncorrectKey = (keyTyped: string) => {
+const handleIncorrectKey = (_keyTyped: string) => {
   // console.info(`Incorrect key typed: ${keyTyped}`);
 };
 
