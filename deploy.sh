@@ -11,8 +11,7 @@ yarn build
 git checkout deploy
 git pull
 
-# Clear out folders and move dist files to root
-rm -rf assets
+# Move dist files to root
 mv dist/* .
 
 # Commit latest build at root and push to GitHub (which then auto-deploys to pages)
