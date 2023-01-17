@@ -20,6 +20,7 @@ import Entity from "./entities/entity";
 import { playSound, traverseUnitCircle } from "./utils";
 import { initializePauseMenu } from "./keyboard";
 import { createBackground } from "./background";
+import { createDeltaTracker } from "./lib";
 
 // const _debug = createDebugger(DEBUG_GAME);
 
@@ -169,8 +170,8 @@ export function initGameplay() {
 
   // TODO: update and render should be handled by the game
 
-  let timeOld = 0;
-  let delta = 0;
+  const deltaTracker = createDeltaTracker();
+
   const update = (delta: number) => {
     if (!game.getIsActive() || game.getIsPaused()) return;
 
@@ -198,8 +199,7 @@ export function initGameplay() {
     context.clearRect(0, 0, canvas.width, canvas.height);
     requestAnimationFrame(render);
 
-    delta = (timeNow - timeOld) / 1000;
-    timeOld = timeNow;
+    deltaTracker.track(timeNow);
 
     Object.entries(entities).forEach(([, entity]) => {
       entity.draw();
@@ -210,7 +210,7 @@ export function initGameplay() {
 
   game.start();
 
-  updateInterval = setInterval(() => update(delta), FRAME_SIZE_MS);
+  updateInterval = setInterval(() => update(deltaTracker.get()), FRAME_SIZE_MS);
   render();
 
   function gameOver(_score: number) {

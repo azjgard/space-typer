@@ -108,6 +108,7 @@ export function entitiesColliding(
 interface CreateCanvasOptions {
   id?: string;
   class?: string;
+  style?: Partial<CSSStyleDeclaration>;
 }
 
 export function createCanvas(options: CreateCanvasOptions) {
@@ -116,6 +117,28 @@ export function createCanvas(options: CreateCanvasOptions) {
   canvas.height = CANVAS_HEIGHT;
   if (options.id) canvas.id = options.id;
   if (options.class) canvas.className = options.class;
+  if (options.style) {
+    Object.keys(options.style).forEach((key) => {
+      canvas.style[key as any] = options.style![key as any]!;
+    });
+  }
   document.querySelector(".canvas-container")?.appendChild(canvas);
   return canvas;
+}
+
+export function randomInRange(min: number, max: number) {
+  return Math.random() * (max - min) + min;
+}
+
+export function createDeltaTracker() {
+  let timeOld = 0;
+  let delta = 0;
+
+  return {
+    track: (timeNow: number) => {
+      delta = (timeNow - timeOld) / 1000;
+      timeOld = timeNow;
+    },
+    get: () => delta,
+  };
 }
