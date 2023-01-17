@@ -1,5 +1,8 @@
 ## Immediate Features
 
+- [ ] Preload all the image and sound assets for better perf in prod
+- [ ] Apply delta to all movement to get rid of choppiness
+
 - [x] Truly endless play
   - [x] Enemy spawns should follow a rough sine curve
   - [x] Typing engine should support reusing first letters in a wave
