@@ -12,6 +12,7 @@ git checkout deploy
 git pull
 
 # Move dist files to root
+rm -rf assets
 mv dist/* .
 
 # Commit latest build at root and push to GitHub (which then auto-deploys to pages)
