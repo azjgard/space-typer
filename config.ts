@@ -1,4 +1,4 @@
-// should match the values for .game-container in style.css
+// should match the values for .canvas-container in style.css
 export const CANVAS_WIDTH = 1300;
 export const CANVAS_HEIGHT = 800;
 

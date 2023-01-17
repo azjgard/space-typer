@@ -28,6 +28,6 @@ export default class Explosion extends Animation {
       onEnd: options.onEnd,
     });
 
-    playSound(explosionSound);
+    setTimeout(() => playSound(explosionSound), 100);
   }
 }

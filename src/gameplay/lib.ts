@@ -1,3 +1,5 @@
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../../config";
+
 interface IDrawImageArgs {
   context: CanvasRenderingContext2D;
   image: CanvasImageSource;
@@ -101,4 +103,19 @@ export function entitiesColliding(
     entity1.position.y <= entity2.position.y + entity2.size.height &&
     entity1.position.y + entity1.size.height >= entity2.position.y
   );
+}
+
+interface CreateCanvasOptions {
+  id?: string;
+  class?: string;
+}
+
+export function createCanvas(options: CreateCanvasOptions) {
+  const canvas = document.createElement("canvas");
+  canvas.width = CANVAS_WIDTH;
+  canvas.height = CANVAS_HEIGHT;
+  if (options.id) canvas.id = options.id;
+  if (options.class) canvas.className = options.class;
+  document.querySelector(".canvas-container")?.appendChild(canvas);
+  return canvas;
 }

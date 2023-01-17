@@ -19,6 +19,7 @@ import Enemy from "./entities/enemy";
 import Entity from "./entities/entity";
 import { playSound, traverseUnitCircle } from "./utils";
 import { initializePauseMenu } from "./keyboard";
+import { createBackground } from "./background";
 
 // const _debug = createDebugger(DEBUG_GAME);
 
@@ -32,6 +33,7 @@ const enemyIdFromWordId = (wordId: string) => `enemy-${wordId}`;
 export let updateInterval: number = 0;
 
 export function initGameplay() {
+  createBackground();
   const game = createGame();
 
   const { entities, enemies, canvas, context } = game;

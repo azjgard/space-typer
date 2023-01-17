@@ -1,6 +1,6 @@
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../../config";
 import Enemy from "./entities/enemy";
 import Entity from "./entities/entity";
+import { createCanvas } from "./lib";
 
 // TODO: literally all of this needs to be moved inside of a function
 
@@ -10,11 +10,11 @@ type GameEventListeners = {
 };
 
 export function createGame() {
-  const canvas = document.createElement("canvas");
-  canvas.width = CANVAS_WIDTH;
-  canvas.height = CANVAS_HEIGHT;
+  const canvas = createCanvas({
+    class: "world",
+  });
 
-  const app = document.querySelector("#game")!;
+  const app = document.querySelector(".canvas-container")!;
   app.appendChild(canvas);
 
   let active = false;
