@@ -1,5 +1,5 @@
 import "./style.css";
-import { initializeStartMenu } from "./gameplay/keyboard";
+// import { initializeStartMenu } from "./gameplay/keyboard";
 import { initGameplay } from "./gameplay";
 
 // initializeStartMenu();
