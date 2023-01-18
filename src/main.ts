@@ -8,4 +8,4 @@ initializeStartMenu();
 //   .querySelectorAll(".menu")
 //   ?.forEach((n) => n.classList.remove("active"));
 
-console.log("Deployed");
+console.log("Deployed 1");
