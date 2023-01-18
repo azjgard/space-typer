@@ -1,4 +1,3 @@
-import explosionSpritesheet from "../../../assets/sprites/explosion-round-spritesheet.png";
 import explosionFrames from "../../../assets/sprites/explosion-round-spritesheet.json";
 import explosionSound from "../../../assets/sounds/explosion.wav";
 
@@ -18,7 +17,7 @@ export default class Explosion extends Animation {
       ...options,
       position: options.position,
       size: options.size,
-      spritesheetPath: explosionSpritesheet,
+      spritesheetPath: "explosion",
       spritesheetFrames: explosionFrames.map((f) => ({
         ...f,
         sWidth: FRAME_SIZE,

@@ -2,7 +2,6 @@ import {
   ENEMY_TEXT_COLOR_DEFAULT,
   ENEMY_TEXT_FONT_DEFAULT,
 } from "../../../../config";
-import enemySpritesheet from "../../../assets/sprites/enemies/ship-spritesheet.png";
 import { generateSinWave } from "../../utils";
 import Enemy, { IEnemyOptions } from "../enemy";
 
@@ -22,7 +21,7 @@ export default class Enemy1 extends Enemy {
       ...options,
       type: "enemy-1",
       sprite: {
-        path: enemySpritesheet,
+        path: "enemyShip",
         sheet: {
           sx: 32 * 2,
           sy: 32 * 2,

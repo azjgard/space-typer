@@ -1,21 +1,15 @@
 import Entity, { IEntityOptions } from "./entity";
 
-import shipHealth4 from "../../assets/sprites/ship/ship-health-4.png";
-import shipHealth3 from "../../assets/sprites/ship/ship-health-3.png";
-import shipHealth2 from "../../assets/sprites/ship/ship-health-2.png";
-import shipHealth1 from "../../assets/sprites/ship/ship-health-1.png";
-
-import engineSpritesheet from "../../assets/sprites/ship/engine-spritesheet.png";
 import engineFrames from "../../assets/sprites/ship/engine-spritesheet.json";
 
 const healthMap = {
-  "4": shipHealth4,
-  "3": shipHealth3,
-  "2": shipHealth2,
-  "1": shipHealth1,
-  "0": shipHealth1,
-  default: shipHealth4,
-};
+  "4": "playerShipHealth4",
+  "3": "playerShipHealth3",
+  "2": "playerShipHealth2",
+  "1": "playerShipHealth1",
+  "0": "playerShipHealth1",
+  default: "playerShipHealth4",
+} as const;
 
 const PLAYER_SCALE = 2.5;
 
@@ -55,7 +49,7 @@ export default class Player extends Entity {
         height: Player.PLAYER_SIZE,
       },
       sprite: {
-        path: shipHealth4,
+        path: "playerShipHealth4",
       },
     });
 
@@ -63,7 +57,7 @@ export default class Player extends Entity {
       id: "player-engine-animation",
       position: this.position,
       size: this.size,
-      spritesheetPath: engineSpritesheet,
+      spritesheetPath: "playerEngineSpritesheet",
       spritesheetFrames: engineFrames.map((f) => ({
         ...f,
         sWidth: ENGINE_SPRITE_FRAME_SIZE,
