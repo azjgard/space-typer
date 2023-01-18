@@ -63,25 +63,51 @@ export function createBackground() {
   const canvasSpeed = 150;
   function move(timeNow: number) {
     deltaTracker.track(timeNow);
-    requestAnimationFrame(move);
+
+    const newCanvases: any[] = [];
 
     canvases.forEach((canvasObj, i, arr) => {
       canvasObj.canvas.style.transform = `translateX(${canvasObj.pos}px)`;
       canvasObj.pos -= canvasSpeed * deltaTracker.get();
-      if (i === arr.length - 1 && canvasObj.pos <= 0) {
-        // remove the previous canvas
-        document
-          .querySelector(".canvas-container")
-          ?.removeChild(arr[i - 1].canvas);
-        // drop it from the array
-        canvases = [canvasObj];
-        // generate and add a new background to the array
-        canvases.push({
+
+      if (i === 0) {
+        console.log(canvasObj.pos);
+      }
+
+      // push a new canvas onto the end when we're `buffer` away from the
+      // first canvas in the list being completely offscreen
+      const buffer = 50;
+      if (
+        // first canvas
+        i === 0 &&
+        // almost fully offscreen
+        canvasObj.pos < CANVAS_WIDTH * -1 + buffer &&
+        // haven't buffered a 3rd canvas yet
+        arr.length < 3
+      ) {
+        newCanvases.push({
           canvas: generateBackgroundCanvas(CANVAS_WIDTH),
-          pos: CANVAS_WIDTH,
+          // CANVAS_WIDTH after the current position of the last canvas
+          pos: arr[arr.length - 1].pos + CANVAS_WIDTH,
         });
       }
+
+      // remove the first canvas when it's completely offscreen
+      if (i === 0 && canvasObj.pos < CANVAS_WIDTH * -1) {
+        // remove the now-offscreen canvas from the DOM
+        document
+          .querySelector(".canvas-container")
+          ?.removeChild(canvasObj.canvas);
+
+        // drop it from the array
+        canvases.splice(0, 1);
+      }
+
+      canvases.push(...newCanvases);
     });
+
+    requestAnimationFrame(move);
   }
-  requestAnimationFrame(move);
+
+  move(0);
 }

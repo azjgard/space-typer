@@ -192,13 +192,14 @@ export function initGameplay() {
     });
   };
 
-  const render = (timeNow = 0) => {
+  const loop = (timeNow = 0) => {
     if (!game.getIsActive()) return;
+    deltaTracker.track(timeNow);
+
+    update(deltaTracker.get());
 
     context.clearRect(0, 0, canvas.width, canvas.height);
-    requestAnimationFrame(render);
-
-    deltaTracker.track(timeNow);
+    requestAnimationFrame(loop);
 
     Object.entries(entities).forEach(([, entity]) => {
       entity.draw();
@@ -209,8 +210,7 @@ export function initGameplay() {
 
   game.start();
 
-  updateInterval = setInterval(() => update(deltaTracker.get()), FRAME_SIZE_MS);
-  render();
+  loop();
 
   function gameOver(_score: number) {
     game.end();
