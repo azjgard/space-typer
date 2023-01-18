@@ -7,3 +7,5 @@ initializeStartMenu();
 // document
 //   .querySelectorAll(".menu")
 //   ?.forEach((n) => n.classList.remove("active"));
+
+console.log("Deployed");
