@@ -1,5 +1,3 @@
-import { Howl } from "howler";
-
 export function absoluteClamp(value: number, clamp: number) {
   const c = Math.abs(clamp);
   if (value < 0) {
