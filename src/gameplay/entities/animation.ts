@@ -1,9 +1,9 @@
-import ImageManager from "../ImageManager";
+import ImageManager, { LoadedImage } from "../ImageManager";
 import { drawImage } from "../lib";
 import Entity, { IEntity, IEntityOptions } from "./entity";
 
 export interface IAnimationOptions extends IEntityOptions {
-  spritesheetPath: string;
+  spritesheetPath: LoadedImage;
   spritesheetFrames: {
     sx: number;
     sy: number;
@@ -16,7 +16,7 @@ export interface IAnimationOptions extends IEntityOptions {
 }
 
 interface IAnimation extends IEntity {
-  spritesheetPath: string;
+  spritesheetPath: LoadedImage;
   spritesheetFrames: {
     sx: number;
     sy: number;
@@ -65,7 +65,7 @@ export default class Animation extends Entity implements IAnimation {
       return;
     }
 
-    const image = ImageManager.getSync(this.spritesheetPath);
+    const image = ImageManager.get(this.spritesheetPath);
     if (!image) return;
 
     drawImage({

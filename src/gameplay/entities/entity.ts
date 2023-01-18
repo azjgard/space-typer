@@ -1,6 +1,6 @@
 import * as uuid from "uuid";
 import { Game } from "../game";
-import ImageManager from "../ImageManager";
+import ImageManager, { LoadedImage } from "../ImageManager";
 import { drawImage, entitiesColliding } from "../lib";
 
 export interface IGameObject {
@@ -18,7 +18,7 @@ export interface IText {
 }
 
 interface ISpriteOptions {
-  path: string;
+  path: LoadedImage;
   sheet?: {
     sx: number;
     sy: number;
@@ -68,7 +68,7 @@ export interface IEntity {
   strokeStyle?: string;
 
   sprite?: {
-    path: string;
+    path: LoadedImage;
     loaded?: boolean;
     image?: HTMLImageElement;
     sheet?: {
@@ -134,11 +134,8 @@ export default class Entity implements IEntityWithGame {
 
   setSprite(options: ISpriteOptions) {
     this.sprite = { ...options };
-    ImageManager.getAsync(this.sprite.path).then((image) => {
-      if (!this.sprite) return;
-      this.sprite.image = image;
-      this.sprite.loaded = true;
-    });
+    this.sprite.image = ImageManager.get(this.sprite.path);
+    this.sprite.loaded = true;
   }
 
   draw() {

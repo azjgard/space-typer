@@ -1,7 +1,6 @@
 import Entity from "./entity";
 import ImageManager from "../ImageManager";
 
-import heartImage from "../../assets/sprites/heart.png";
 import { drawImage } from "../lib";
 
 const HEART_SIZE = 40;
@@ -16,7 +15,7 @@ export default class HealthManager extends Entity {
     super.draw();
     if (!this.active) return;
 
-    const image = ImageManager.getSync(heartImage);
+    const image = ImageManager.get("heart");
     if (!image) {
       return;
     }
