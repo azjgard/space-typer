@@ -55,7 +55,3 @@ export function* generateSinWave() {
     yield traverser.next().y;
   }
 }
-
-export function playSound(soundPath: string) {
-  return new Howl({ src: [soundPath] }).play();
-}

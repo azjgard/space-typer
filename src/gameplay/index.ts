@@ -9,18 +9,17 @@ import {
   ENEMY_TEXT_FONT_TYPED,
 } from "../../config";
 
-import clickSound from "../assets/sounds/click.wav";
-
 import Enemy1 from "./entities/enemies/enemy1";
 import HealthManager from "./entities/healthManager";
 import ScoreManager from "./entities/scoreManager";
 import Player from "./entities/player";
 import Enemy from "./entities/enemy";
 import Entity from "./entities/entity";
-import { playSound, traverseUnitCircle } from "./utils";
+import { traverseUnitCircle } from "./utils";
 import { initializePauseMenu } from "./keyboard";
 import { createBackground } from "./background";
 import { createDeltaTracker } from "./lib";
+import soundManager from "./SoundManager";
 
 // const _debug = createDebugger(DEBUG_GAME);
 
@@ -124,7 +123,7 @@ export function initGameplay() {
       return;
     }
 
-    playSound(clickSound);
+    soundManager.play("click");
 
     scoreManager.addPoints(destroyedEnemy.getPoints());
     game.removeEntity(destroyedEnemy);
@@ -147,7 +146,7 @@ export function initGameplay() {
       return;
     }
 
-    playSound(clickSound);
+    soundManager.play("click");
 
     const fullWord = targetedEnemy.word;
     const typedWord = state.currentTypedWord;

@@ -1,9 +1,8 @@
 import explosionFrames from "../../../assets/sprites/explosion-round-spritesheet.json";
-import explosionSound from "../../../assets/sounds/explosion.wav";
 
 import Animation, { IAnimationOptions } from "../animation";
-import { playSound } from "../../utils";
 import { IEntityOptions } from "../entity";
+import soundManager from "../../SoundManager";
 
 const FRAME_SIZE = 100;
 
@@ -27,6 +26,6 @@ export default class Explosion extends Animation {
       onEnd: options.onEnd,
     });
 
-    setTimeout(() => playSound(explosionSound), 100);
+    setTimeout(() => soundManager.play("explosion"), 100);
   }
 }

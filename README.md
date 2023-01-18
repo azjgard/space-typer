@@ -1,6 +1,6 @@
 ## Immediate Features
 
-- [ ] Preload all the image and sound assets for better perf in prod
+- [x] Preload all the image and sound assets for better perf in prod
 - [ ] Apply delta to all movement to get rid of choppiness
 - [ ] Gap between procedural canvases
 - [ ] Show the procedurally generated background scrolling past at the main menu
