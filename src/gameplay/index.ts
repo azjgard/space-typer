@@ -17,7 +17,7 @@ import Enemy from "./entities/enemy";
 import Entity from "./entities/entity";
 import { traverseUnitCircle } from "./utils";
 import { initializePauseMenu } from "./keyboard";
-import { createBackground } from "./background";
+import { createBackgroundManager } from "./BackgroundManager";
 import { createDeltaTracker } from "./lib";
 import soundManager from "./SoundManager";
 
@@ -33,8 +33,8 @@ const enemyIdFromWordId = (wordId: string) => `enemy-${wordId}`;
 export let updateInterval: number = 0;
 
 export function initGameplay() {
-  createBackground();
   const game = createGame();
+  const backgroundManager = createBackgroundManager();
 
   const { entities, enemies, canvas, context } = game;
   initializePauseMenu(game);
@@ -196,7 +196,10 @@ export function initGameplay() {
     if (!game.getIsActive()) return;
     deltaTracker.track(timeNow);
 
-    update(deltaTracker.get());
+    const delta = deltaTracker.get();
+
+    update(delta);
+    backgroundManager.update(delta);
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     requestAnimationFrame(loop);
