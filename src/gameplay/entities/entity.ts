@@ -1,6 +1,6 @@
 import * as uuid from "uuid";
 import { Game } from "../game";
-import ImageManager, { LoadedImage } from "../ImageManager";
+import ImageManager, { LoadedImage } from "../managers/ImageManager";
 import { drawImage, entitiesColliding } from "../lib";
 
 export interface IGameObject {

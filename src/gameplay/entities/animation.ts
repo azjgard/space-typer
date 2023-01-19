@@ -1,4 +1,4 @@
-import ImageManager, { LoadedImage } from "../ImageManager";
+import ImageManager, { LoadedImage } from "../managers/ImageManager";
 import { drawImage } from "../lib";
 import Entity, { IEntity, IEntityOptions } from "./entity";
 

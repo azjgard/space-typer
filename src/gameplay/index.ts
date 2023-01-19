@@ -17,9 +17,9 @@ import Enemy from "./entities/enemy";
 import Entity from "./entities/entity";
 import { traverseUnitCircle } from "./utils";
 import { initializePauseMenu } from "./keyboard";
-import { createBackgroundManager } from "./BackgroundManager";
+import { createBackgroundManager } from "./managers/BackgroundManager";
 import { createDeltaTracker } from "./lib";
-import soundManager from "./SoundManager";
+import soundManager from "./managers/SoundManager";
 
 // const _debug = createDebugger(DEBUG_GAME);
 
@@ -193,7 +193,7 @@ export function initGameplay() {
   };
 
   const loop = (timeNow = 0) => {
-    if (!game.getIsActive()) return;
+    if (!game.getIsActive() || game.getIsPaused()) return;
     deltaTracker.track(timeNow);
 
     const delta = deltaTracker.get();

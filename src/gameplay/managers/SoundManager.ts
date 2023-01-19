@@ -1,7 +1,7 @@
 import { Howl } from "howler";
 
-import click from "../assets/sounds/click.wav";
-import explosion from "../assets/sounds/explosion.wav";
+import click from "../../assets/sounds/click.wav";
+import explosion from "../../assets/sounds/explosion.wav";
 
 const soundManager = createSoundManager({
   click,

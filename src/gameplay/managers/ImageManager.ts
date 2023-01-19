@@ -1,11 +1,11 @@
-import playerEngineSpritesheet from "../assets/sprites/ship/engine-spritesheet.png";
-import playerShipHealth4 from "../assets/sprites/ship/ship-health-4.png";
-import playerShipHealth3 from "../assets/sprites/ship/ship-health-3.png";
-import playerShipHealth2 from "../assets/sprites/ship/ship-health-2.png";
-import playerShipHealth1 from "../assets/sprites/ship/ship-health-1.png";
-import enemyShip from "../assets/sprites/enemies/ship-spritesheet.png";
-import explosion from "../assets/sprites/explosion-round-spritesheet.png";
-import heart from "../assets/sprites/heart.png";
+import playerEngineSpritesheet from "../../assets/sprites/ship/engine-spritesheet.png";
+import playerShipHealth4 from "../../assets/sprites/ship/ship-health-4.png";
+import playerShipHealth3 from "../../assets/sprites/ship/ship-health-3.png";
+import playerShipHealth2 from "../../assets/sprites/ship/ship-health-2.png";
+import playerShipHealth1 from "../../assets/sprites/ship/ship-health-1.png";
+import enemyShip from "../../assets/sprites/enemies/ship-spritesheet.png";
+import explosion from "../../assets/sprites/explosion-round-spritesheet.png";
+import heart from "../../assets/sprites/heart.png";
 
 const images = {
   playerEngineSpritesheet,

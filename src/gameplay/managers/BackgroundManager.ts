@@ -1,11 +1,11 @@
 import { createNoise2D } from "simplex-noise";
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../../config";
-import { createCanvas, randomInRange } from "./lib";
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../../../config";
+import { createCanvas, randomInRange } from "../lib";
+
+const canvasSpeed = 150;
+const canvasLeftBound = CANVAS_WIDTH * -1;
 
 export function createBackgroundManager() {
-  const canvasSpeed = 150;
-  const canvasLeftBound = CANVAS_WIDTH * -1;
-
   const canvas1 = { canvas: generateBackgroundCanvas(0), pos: 0 };
   const canvas2 = {
     canvas: generateBackgroundCanvas(CANVAS_WIDTH),
@@ -21,10 +21,10 @@ export function createBackgroundManager() {
       canvas2.canvas.style.transform = `translateX(${canvas2.pos}px)`;
 
       if (canvas1.pos <= canvasLeftBound) {
-        canvas1.pos = canvas2.pos + canvas2.canvas.width;
+        canvas1.pos = canvas2.pos + canvas2.canvas.width - 3;
       }
       if (canvas2.pos <= canvasLeftBound) {
-        canvas2.pos = canvas1.pos + canvas1.canvas.width;
+        canvas2.pos = canvas1.pos + canvas1.canvas.width - 3;
       }
     },
   };

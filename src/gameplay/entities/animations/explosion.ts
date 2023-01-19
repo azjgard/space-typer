@@ -2,7 +2,7 @@ import explosionFrames from "../../../assets/sprites/explosion-round-spritesheet
 
 import Animation, { IAnimationOptions } from "../animation";
 import { IEntityOptions } from "../entity";
-import soundManager from "../../SoundManager";
+import soundManager from "../../managers/SoundManager";
 
 const FRAME_SIZE = 100;
 
