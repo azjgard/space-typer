@@ -1,4 +1,4 @@
-import Entity, { IEntityOptions, UpdateEntityArgs } from "./entities/entity";
+import Entity, { IEntityOptions } from "./entities/entity";
 
 interface IHitBoxOptions extends IEntityOptions {
   passthroughEntityIds?: Set<string>;
@@ -35,10 +35,8 @@ export default class Hitbox extends Entity {
     super.draw();
   }
 
-  update(...args: UpdateEntityArgs) {
-    const [entities, delta] = args;
-
-    super.update(entities, delta);
+  update(delta: number) {
+    super.update(delta);
 
     if (this.durationElapsed >= this.duration) {
       this.game.removeEntity(this);

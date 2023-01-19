@@ -8,7 +8,6 @@ export interface IGameObject {
 }
 
 export type DrawEntityArgs = [CanvasRenderingContext2D];
-export type UpdateEntityArgs = [{ [entityId: string]: Entity }, number];
 
 export interface IText {
   value: string;
@@ -203,10 +202,10 @@ export default class Entity implements IEntityWithGame {
     return this.active;
   }
 
-  update(..._args: UpdateEntityArgs) {
+  update(delta: number) {
     if (!this.active) return;
-    this.position.y += this.velocity.y;
-    this.position.x += this.velocity.x;
+    this.position.y += this.velocity.y * delta;
+    this.position.x += this.velocity.x * delta;
   }
 
   destroy() {

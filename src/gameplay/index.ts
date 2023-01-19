@@ -175,7 +175,7 @@ export function initGameplay() {
     if (!game.getIsActive() || game.getIsPaused()) return;
 
     Object.entries(entities).forEach(([, entity]) => {
-      entity.update(entities, delta);
+      entity.update(delta);
       if (entity instanceof Enemy) {
         const reachedEnd = entity.isCollidingWith(endEntity);
         if (reachedEnd) {

@@ -10,7 +10,7 @@ interface IEnemy1Options extends IEnemyOptions {}
 export default class Enemy1 extends Enemy {
   public static width = 64;
   public static height = 64;
-  public static startingVelocity = -2.3;
+  public static startingVelocity = -60;
 
   initialPosition: { x: number; y: number } | null;
 
@@ -41,8 +41,8 @@ export default class Enemy1 extends Enemy {
     this.initialPosition = options.position ?? null;
   }
 
-  update(...args: any[]) {
-    this.velocity.y = (this.wave.next().value as number) * 1;
-    super.update(args[0], args[1]);
+  update(delta: number) {
+    this.velocity.y = (this.wave.next().value as number) * 50;
+    super.update(delta);
   }
 }

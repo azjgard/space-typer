@@ -68,10 +68,10 @@ export default class Player extends Entity {
     });
   }
 
-  update(...args: any[]) {
-    this.velocity.y = (this.wave.next().value as number) * 1;
+  update(delta: number) {
+    this.velocity.y = (this.wave.next().value as number) * 50;
 
-    super.update(args[0], args[1]);
+    super.update(delta);
 
     this.engineAnimation.position = {
       x: this.position.x + ENGINE_SPRITE_OFFSETS.x,
