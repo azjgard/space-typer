@@ -1,27 +1,24 @@
 import { createGame } from "./game";
 import { createTypingEngine } from "./typingEngine";
-// import createDebugger from "../debug";
 import {
-  // DEBUG_GAME,
   ENEMY_TEXT_COLOR_DEFAULT,
   ENEMY_TEXT_COLOR_TYPED,
   ENEMY_TEXT_FONT_DEFAULT,
   ENEMY_TEXT_FONT_TYPED,
 } from "../../config";
 
-import Enemy1 from "./entities/enemies/enemy1";
 import HealthManager from "./entities/healthManager";
 import ScoreManager from "./entities/scoreManager";
 import Player from "./entities/player";
-import Enemy from "./entities/enemy";
 import Entity from "./entities/entity";
+import Enemy from "./entities/enemy";
+import Enemy1 from "./entities/enemies/enemy1";
+
 import { traverseUnitCircle } from "./utils";
 import { initializePauseMenu } from "./keyboard";
-import { createBackgroundManager } from "./managers/BackgroundManager";
-import { createDeltaTracker } from "./lib";
-import soundManager from "./managers/SoundManager";
 
-// const _debug = createDebugger(DEBUG_GAME);
+import { createBackgroundManager } from "./managers/BackgroundManager";
+import soundManager from "./managers/SoundManager";
 
 export const DEBUG = true;
 export const UPDATE_INTERVAL_MS = 16.66; // 60 fps
@@ -29,14 +26,11 @@ export const FRAME_SIZE_MS = 1000 / 60;
 
 const enemyIdFromWordId = (wordId: string) => `enemy-${wordId}`;
 
-// TODO: this is a hack to avoid refactoring right now, move this inside of the game
-export let updateInterval: number = 0;
-
 export function initGameplay() {
   const game = createGame();
   const backgroundManager = createBackgroundManager();
 
-  const { entities, enemies, canvas, context } = game;
+  const { entities, enemies } = game;
   initializePauseMenu(game);
 
   const endEntity = game.createEntity(Entity, {
@@ -165,15 +159,8 @@ export function initGameplay() {
     ]);
   });
 
-  typingEngine.start();
-
-  // TODO: update and render should be handled by the game
-
-  const deltaTracker = createDeltaTracker();
-
-  const update = (delta: number) => {
-    if (!game.getIsActive() || game.getIsPaused()) return;
-
+  game.setUpdate((delta) => {
+    backgroundManager.update(delta);
     Object.entries(entities).forEach(([, entity]) => {
       entity.update(delta);
       if (entity instanceof Enemy) {
@@ -190,34 +177,18 @@ export function initGameplay() {
         }
       }
     });
-  };
+  });
 
-  const loop = (timeNow = 0) => {
-    if (!game.getIsActive() || game.getIsPaused()) return;
-    deltaTracker.track(timeNow);
-
-    const delta = deltaTracker.get();
-
-    update(delta);
-    backgroundManager.update(delta);
-
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    requestAnimationFrame(loop);
-
-    Object.entries(entities).forEach(([, entity]) => {
-      entity.draw();
-    });
-
+  game.setDraw((fn) => {
+    fn();
     healthManager.draw();
-  };
+  });
 
+  typingEngine.start();
   game.start();
-
-  loop();
 
   function gameOver(_score: number) {
     game.end();
-    clearInterval(updateInterval);
 
     // alert(`Game over! Your score was ${score}!`);
     setTimeout(() => {

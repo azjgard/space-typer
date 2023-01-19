@@ -1,4 +1,4 @@
-import { initGameplay, updateInterval } from ".";
+import { initGameplay } from ".";
 import { Game } from "./game";
 
 const q = (selector: string) => document.querySelector(selector);
@@ -47,7 +47,6 @@ export function initializePauseMenu(game: Game) {
 
   const quitListener = (_e: Event) => {
     game.end();
-    clearInterval(updateInterval);
 
     q(".start-menu")?.classList.add("active");
     q(".pause-menu")?.classList.remove("active");

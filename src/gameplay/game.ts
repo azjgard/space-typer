@@ -1,18 +1,12 @@
 import Enemy from "./entities/enemy";
 import Entity from "./entities/entity";
-import { createCanvas } from "./lib";
-
-// TODO: literally all of this needs to be moved inside of a function
-
-type GameEvents = { "enemy-destroyed": { enemyId: string } };
-type GameEventListeners = {
-  [key in keyof GameEvents]: ((data: GameEvents[key]) => void)[];
-};
+import { createCanvas, createDeltaTracker } from "./lib";
 
 export function createGame() {
   const canvas = createCanvas({
     class: "world",
   });
+  const context = canvas.getContext("2d")!;
 
   const app = document.querySelector(".canvas-container")!;
   app.appendChild(canvas);
@@ -21,32 +15,6 @@ export function createGame() {
   let paused = false;
   let entities: { [entityId: string]: Entity } = {};
   let enemies: { [enemyId: string]: Enemy } = {};
-
-  // TODO: allow registering custom event types to avoid hardcoding
-  // them - probably need to move all of this inside a class / function
-  // to allow passing in a generic for event types and for custom entity
-  // types.
-  let eventListeners: GameEventListeners = {
-    "enemy-destroyed": [],
-  };
-
-  function on<E extends keyof GameEvents>(
-    e: E,
-    callback: GameEventListeners[E][number]
-  ) {
-    eventListeners[e].push(callback);
-  }
-
-  function off<E extends keyof GameEvents>(
-    e: E,
-    callback: GameEventListeners[E][number]
-  ) {
-    eventListeners[e] = eventListeners[e].filter((c) => c !== callback);
-  }
-
-  function emit<E extends keyof GameEvents>(e: E, data: GameEvents[E]) {
-    eventListeners[e].forEach((cb) => cb(data));
-  }
 
   function createEntity<
     E extends Entity,
@@ -95,14 +63,57 @@ export function createGame() {
     enemies = {};
   }
 
+  const deltaTracker = createDeltaTracker();
+
+  const defaultUpdate = (delta: number) => {
+    Object.entries(entities).forEach(([, entity]) => {
+      entity.update(delta);
+    });
+  };
+
+  const defaultDraw = () => {
+    Object.entries(entities).forEach(([, entity]) => {
+      entity.draw();
+    });
+  };
+
+  let update: (delta: number, defaultFn: typeof defaultUpdate) => void = (
+    delta
+  ) => defaultUpdate(delta);
+
+  let draw: (defaultFn: typeof defaultDraw) => void = () => defaultDraw();
+
+  const loop = (timeNow = 0) => {
+    // no updating if the game is inactive
+    if (!game.getIsActive()) return;
+
+    // update the time since the last frame
+    deltaTracker.track(timeNow);
+
+    // get the time since the last frame
+    const delta = deltaTracker.get();
+
+    // call the user-defined update method
+    update(delta, defaultUpdate);
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    requestAnimationFrame(loop);
+
+    // call the user-defined draw method
+    draw(defaultDraw);
+  };
+
   function start() {
     active = true;
+    loop();
   }
 
   function end() {
     active = false;
-    clearEntities();
-    app.removeChild(canvas);
+    setTimeout(() => {
+      clearEntities();
+      app.removeChild(canvas);
+    }, 300);
   }
 
   var game = {
@@ -112,11 +123,10 @@ export function createGame() {
     entities,
     enemies,
     canvas,
-    context: canvas.getContext("2d")!,
-    on,
-    off,
-    emit,
+    context,
     getIsActive: () => active,
+    setUpdate: (updateFn: typeof update) => (update = updateFn),
+    setDraw: (drawFn: typeof draw) => (draw = drawFn),
     start,
     end,
     togglePaused: () => {
