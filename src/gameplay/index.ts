@@ -7,18 +7,18 @@ import {
   ENEMY_TEXT_FONT_TYPED,
 } from "../../config";
 
-import HealthManager from "./entities/healthManager";
-import ScoreManager from "./entities/scoreManager";
+import HealthManager from "./managers/HealthManager";
+import ScoreManager from "./managers/ScoreManager";
 import Player from "./entities/player";
 import Entity from "./entities/entity";
 import Enemy from "./entities/enemy";
 import Enemy1 from "./entities/enemies/enemy1";
 
 import { traverseUnitCircle } from "./utils";
-import { initializePauseMenu } from "./keyboard";
 
 import { createBackgroundManager } from "./managers/BackgroundManager";
 import soundManager from "./managers/SoundManager";
+import { createMenuManager } from "./managers/MenuManager";
 
 export const DEBUG = true;
 export const UPDATE_INTERVAL_MS = 16.66; // 60 fps
@@ -28,10 +28,44 @@ const enemyIdFromWordId = (wordId: string) => `enemy-${wordId}`;
 
 export function initGameplay() {
   const game = createGame();
+  const typingEngine = createTypingEngine();
   const backgroundManager = createBackgroundManager();
+  const menuManager = createMenuManager();
+
+  const mainMenu = menuManager.create({
+    name: "main",
+    getClickHandlers: ({ getMenu }) => ({
+      play: () => {
+        getMenu("main")?.hide();
+        typingEngine.start();
+        game.start();
+      },
+      options: () => {
+        console.log("Options");
+      },
+      "high-scores": () => {
+        console.log("High Scores");
+      },
+    }),
+  });
+
+  const pauseMenu = menuManager.create({
+    name: "pause",
+    getClickHandlers: ({ getMenu }) => ({
+      resume: () => {
+        game.togglePaused();
+        getMenu("pause")?.hide();
+      },
+      restart: () => {
+        console.log("restart");
+      },
+      quit: () => {
+        console.log("quit");
+      },
+    }),
+  });
 
   const { entities, enemies } = game;
-  initializePauseMenu(game);
 
   const endEntity = game.createEntity(Entity, {
     id: "endEntity",
@@ -71,44 +105,78 @@ export function initGameplay() {
     },
   });
 
-  const typingEngine = createTypingEngine();
+  const VERTICAL_PADDING = 50;
 
-  typingEngine.on("initializeLevel", async function initializeLevel(state) {
-    // clear out any existing enemies
-    Object.values(game.entities).forEach((entity) => {
-      if (/enemy/.test(entity.type)) {
-        game.removeEntity(entity);
-      }
+  game.createEntity(Entity, {
+    id: "illustrator",
+    position: {
+      x: 0,
+      y: 0,
+    },
+    size: {
+      width: game.canvas.width,
+      height: VERTICAL_PADDING,
+    },
+    fillStyle: "red",
+  });
+  game.createEntity(Entity, {
+    id: "illustrator1",
+    position: {
+      x: 0,
+      y: game.canvas.height,
+    },
+    size: {
+      width: game.canvas.width,
+      height: VERTICAL_PADDING * -1,
+    },
+    fillStyle: "red",
+  });
+
+  typingEngine.on("waveStarted", async function startWave(state) {
+    const { wordObjects } = state;
+    const spawnSpace = game.canvas.height - VERTICAL_PADDING * 2;
+    const yMargin = Math.floor(spawnSpace / wordObjects.length);
+
+    console.log({
+      height: game.canvas.height,
+      spawnSpace,
+      yMargin,
     });
 
     let entityIds: string[] = [];
 
-    const coordinateCalculator = traverseUnitCircle(Math.PI, 100, 300, {
-      transform: ({ x, y }) => ({
-        x: x + game.canvas.width / 2,
-        y: y + game.canvas.height / 2,
-      }),
-    });
-    for (let i = 0; i < state.activeWordObjects.length; i++) {
-      const awo = state.activeWordObjects[i];
+    for (let i = 0; i < state.wordObjects.length; i++) {
+      const awo = state.wordObjects[i];
       const entityId = enemyIdFromWordId(awo.id);
+      console.log(entityId);
+
+      const position = {
+        x: game.canvas.width,
+        y: VERTICAL_PADDING + yMargin * i + Enemy1.height / 2,
+      };
 
       // const y = 30 + i * (Enemy1.height + 30);
-      game.createEntity(Enemy1, {
-        id: entityId,
+      const e = game.createEntity(Enemy1, {
+        id: `enemy-${awo.id}`,
         active: false,
-        position: { x: game.canvas.width, y: coordinateCalculator.next().y },
+        position,
         word: awo.word,
         endEntity,
+        fillStyle: "green",
       });
+      e.activate();
       entityIds.push(entityId);
     }
 
     // Stagger activation of enemies in the wave
-    for (let i = 0; i < entityIds.length; i++) {
-      entities[entityIds[i]].activate();
-      await new Promise((r) => setTimeout(r, Math.random() * 800 + 1200));
-    }
+    // for (let i = 0; i < entityIds.length; i++) {
+    //   entities[entityIds[i]].activate();
+    //   await new Promise((r) => setTimeout(r, Math.random() * 800 + 1200));
+    // }
+  });
+
+  typingEngine.on("initializeLevel", async function initializeLevel(state) {
+    console.log("Level " + state.currentLevel);
   });
 
   typingEngine.on("typedFullWord", function destroyEnemy(state) {
@@ -184,16 +252,8 @@ export function initGameplay() {
     healthManager.draw();
   });
 
-  typingEngine.start();
-  game.start();
-
   function gameOver(_score: number) {
     game.end();
-
-    // alert(`Game over! Your score was ${score}!`);
-    setTimeout(() => {
-      console.log("Game over!");
-      initGameplay();
-    }, 20);
+    console.log("Game over!");
   }
 }

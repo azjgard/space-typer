@@ -1,4 +1,4 @@
-import Entity, { IText } from "./entity";
+import Entity, { IText } from "../entities/entity";
 
 export default class ScoreManager extends Entity {
   static getText = (text: string | number): IText[] => {

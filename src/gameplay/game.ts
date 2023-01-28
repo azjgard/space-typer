@@ -25,6 +25,7 @@ export function createGame() {
       game,
     }) as InstanceType<C>;
     if (entities[entity.id]) {
+      console.log(entity.id + " is not unique");
       throw new Error("All entities must have a unique id");
     }
 
@@ -85,7 +86,7 @@ export function createGame() {
 
   const loop = (timeNow = 0) => {
     // no updating if the game is inactive
-    if (!game.getIsActive()) return;
+    if (!active) return;
 
     // update the time since the last frame
     deltaTracker.track(timeNow);
@@ -109,11 +110,7 @@ export function createGame() {
   }
 
   function end() {
-    active = false;
-    setTimeout(() => {
-      clearEntities();
-      app.removeChild(canvas);
-    }, 300);
+    clearEntities();
   }
 
   var game = {

@@ -1,11 +1,4 @@
 import "./style.css";
-import { initializeStartMenu } from "./gameplay/keyboard";
-// import { initGameplay } from "./gameplay";
+import { initGameplay } from "./gameplay";
 
-initializeStartMenu();
-// initGameplay();
-// document
-//   .querySelectorAll(".menu")
-//   ?.forEach((n) => n.classList.remove("active"));
-
-console.log("Deployed 1");
+initGameplay();

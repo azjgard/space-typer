@@ -1,5 +1,5 @@
-import Entity from "./entity";
-import ImageManager from "../managers/ImageManager";
+import Entity from "../entities/entity";
+import ImageManager from "./ImageManager";
 
 import { drawImage } from "../lib";
 

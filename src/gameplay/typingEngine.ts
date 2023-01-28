@@ -1,31 +1,4 @@
-import createDebugger from "../debug";
-import util from "../util";
-
-import { DEBUG_TYPING_ENGINE } from "../../config";
-const debug = createDebugger(DEBUG_TYPING_ENGINE);
-
-const debugContainer = document.getElementById("debug");
-
-const KEYS_TO_PRACTICE = [
-  "a",
-  "s",
-  "d",
-  "u",
-  "f",
-  "g",
-  "h",
-  "j",
-  "k",
-  "l",
-  ";",
-  //
-  "q",
-  "w",
-  "e",
-  "r",
-  "t",
-  "y",
-];
+import { Level, levels, Wave } from "./levels";
 
 type GenerateWordsOptions = {
   count: number;
@@ -91,6 +64,55 @@ const generateWords = (
   return words;
 };
 
+const generateWaveWords = (level: Level, wave: Wave) => {
+  // TODO: use real words instead of generating random phrases
+  const count = wave.characterCount ?? level.characterCount;
+
+  // available characters to compose words from
+  const characters = level.characters;
+
+  // we need at least as many characters to choose from as there
+  // are enemies being generated in the wave
+  if (characters.length < count) {
+    throw new Error(
+      `Not enough characters (${characters.length}) for the count (${count})`
+    );
+  }
+
+  // the words in a wave
+  const words: string[] = [];
+
+  let availableFirstLetters = [...characters];
+  for (let e = 0; e < wave.enemies.length; e++) {
+    const enemy = wave.enemies[e];
+    if (!enemy) continue;
+
+    let word = "";
+
+    for (let c = 0; c < count; c++) {
+      // we enforce that the first letter of each word is different so
+      // that it's clear which word the user is targeting when they start
+      // typing for the first time
+      if (c === 0) {
+        const randomFirstLetterIndex = Math.floor(
+          Math.random() * availableFirstLetters.length
+        );
+        const randomFirstLetter = availableFirstLetters[randomFirstLetterIndex];
+        availableFirstLetters.splice(randomFirstLetterIndex, 1);
+        word += randomFirstLetter;
+        continue;
+      }
+
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      word += characters[randomIndex];
+    }
+
+    words.push(word);
+  }
+
+  return words;
+};
+
 const getWordGenerationOptionsByLevel = (
   level: number
 ): GenerateWordsOptions => {
@@ -108,6 +130,7 @@ const handleIncorrectKey = (_keyTyped: string) => {
 interface WordObject {
   id: string;
   word: string;
+  wave: number;
 }
 
 export interface TypingEngineState {
@@ -116,11 +139,14 @@ export interface TypingEngineState {
   currentTypedWord: string;
   nextExpectedCharacter: string | undefined;
   activeWordObjects: WordObject[];
-  activeWordFirstLetterToIdMap: Map<string, string>;
 }
 
 export interface TypingEngineEvents {
   initializeLevel: TypingEngineState;
+  waveStarted: {
+    wordObjects: { id: string; word: string }[];
+  } & TypingEngineState;
+  waveEnded: TypingEngineState;
   resetWordState: TypingEngineState;
   updateCurrentlyTypedWord: TypingEngineState;
   typedFullWord: TypingEngineState & { typedFullWordId: string };
@@ -133,7 +159,6 @@ export const createTypingEngine = () => {
     currentTypedWord: "",
     nextExpectedCharacter: undefined,
     activeWordObjects: [],
-    activeWordFirstLetterToIdMap: new Map(),
   };
 
   const registeredEvents: {
@@ -145,6 +170,8 @@ export const createTypingEngine = () => {
     initializeLevel: [],
     updateCurrentlyTypedWord: [],
     typedFullWord: [],
+    waveStarted: [],
+    waveEnded: [],
   };
 
   const resetWordState = () => {
@@ -155,75 +182,122 @@ export const createTypingEngine = () => {
     registeredEvents.resetWordState.forEach((cb) => cb(state));
   };
 
-  const initializeLevel = (level: number) => {
+  const initializeLevel = async (level: number) => {
     state.currentLevel = level;
 
-    const opts = getWordGenerationOptionsByLevel(level);
-    const words = generateWords(KEYS_TO_PRACTICE, opts);
+    const currentLevel = levels[level - 1];
+    if (!currentLevel) {
+      throw new Error("BRO no levels left, make some more");
+    }
 
-    words.forEach((word, id) => {
-      const activeWordObject = {
-        id: String(id),
-        word,
-      };
-      state.activeWordObjects.push(activeWordObject);
+    // notify listeners that the level was initialized
+    // - take note that the level initialization event is always
+    // fired BEFORE the wave initialization event
+    registeredEvents.initializeLevel.forEach((cb) => cb({ ...state }));
 
-      const firstLetter = word[0];
-      state.activeWordFirstLetterToIdMap.set(firstLetter, activeWordObject.id);
-    });
+    // process all waves in the level
+    await processWaves();
 
-    registeredEvents.initializeLevel.forEach((cb) => cb(state));
+    if (!state.activeWordObjects.length) {
+      await initializeLevel(level + 1);
+    } else {
+      await new Promise<void>((resolve) => {
+        const cb = (state: TypingEngineState) => {
+          // there are still one or more waves left,
+          // so we shouldn't initialize the next level yet
+          if (state.activeWordObjects.length) {
+            return;
+          }
 
-    debug.log({
-      message: "Initializing level",
-      level,
-      activeWordObjects: state.activeWordObjects.map(({ id }) => id),
-    });
+          registeredEvents.waveEnded = registeredEvents.waveEnded.filter(
+            (_cb) => _cb !== cb
+          );
 
-    debug.execute(() => {
-      if (document.querySelector("#level")) {
-        document.querySelector("#level")?.remove();
-      }
-      const levelH1 = document.createElement("h1");
-      levelH1.id = "level";
-      levelH1.innerHTML = `Level ${level}`;
-      debugContainer?.appendChild(levelH1);
-
-      const wordList = document.createElement("ul");
-      state.activeWordObjects.forEach(({ id, word }) => {
-        const wordItem = document.createElement("li");
-        wordItem.id = util.idToDomId(id);
-        wordItem.innerText = `${word}`;
-        wordList.appendChild(wordItem);
+          resolve();
+        };
+        registeredEvents.waveEnded.push(cb);
       });
-      debugContainer!.appendChild(wordList);
-    });
+
+      await initializeLevel(level + 1);
+    }
+
+    async function processWaves(waveIndex = 0) {
+      const currentWave = currentLevel.waves[waveIndex];
+
+      const wordsForWave = generateWaveWords(currentLevel, currentWave);
+      const wordObjectsForWave: WordObject[] = wordsForWave.map((word, id) => ({
+        id: `${waveIndex}-${id}`,
+        word,
+        wave: waveIndex,
+      }));
+
+      wordObjectsForWave.forEach((wo) => state.activeWordObjects.push(wo));
+
+      // notify listeners that the wave was initialized
+      // - take note that the wave initialization event is always
+      // fired AFTER the level initialization event
+      registeredEvents.waveStarted.forEach((cb) =>
+        cb({ ...state, wordObjects: wordObjectsForWave })
+      );
+
+      const nextWave = currentLevel.waves[waveIndex + 1];
+      if (nextWave) {
+        await new Promise<void>((resolve) => {
+          if (nextWave.trigger.type === "first") {
+            throw new Error(
+              "'first' trigger shouldn't be used beyond the first wave of a level"
+            );
+          }
+
+          if (nextWave.trigger.type === "prevWaveCleared") {
+            const cb = () => {
+              registeredEvents.waveEnded = registeredEvents.waveEnded.filter(
+                (_cb) => _cb !== cb
+              );
+
+              resolve();
+            };
+
+            registeredEvents.waveEnded.push(cb);
+            return;
+          }
+
+          if (nextWave.trigger.type === "time") {
+            setTimeout(resolve, nextWave.trigger.time);
+            return;
+          }
+
+          throw new Error(`Invalid wave trigger: ${nextWave.trigger}`);
+        });
+
+        await processWaves(waveIndex + 1);
+      }
+    }
   };
 
   const handleWordRemoval = (id: string) => {
-    state.activeWordObjects = state.activeWordObjects.filter(
-      (awo) => awo.id !== id
-    );
+    const { activeWordObjects } = state;
+
+    // find the word object being removed
+    const index = activeWordObjects.findIndex(({ id: cid }) => cid === id);
+    if (index === -1) return;
+
+    // remove the word object from the main array
+    const [wo] = activeWordObjects.splice(index, 1);
+    const wave = wo.wave;
+
+    // notify callbacks that a full word was typed
     registeredEvents.typedFullWord.forEach((cb) =>
       cb({ ...state, typedFullWordId: id })
     );
 
-    resetWordState();
-
-    if (state.activeWordObjects.length === 0) {
-      initializeLevel(state.currentLevel + 1);
+    // emit a wave ended event if all of the word objects for this wave have been cleared
+    const waveEnded = !activeWordObjects.some((awo) => awo.wave === wave);
+    if (waveEnded) {
+      registeredEvents.waveEnded.forEach((cb) => cb({ ...state }));
     }
 
-    // Remove the associated DOM element
-    debug.execute(() => {
-      const e = document.querySelector(`#${util.idToDomId(id)}`);
-      if (!e) {
-        throw new Error("Couldn't find element");
-      }
-      e.remove();
-    });
-
-    return;
+    resetWordState();
   };
 
   const updateCurrentlyTypedWord = (
@@ -240,22 +314,6 @@ export const createTypingEngine = () => {
       wordObject.word[state.currentTypedWord.length];
 
     registeredEvents.updateCurrentlyTypedWord.forEach((cb) => cb(state));
-
-    // Update the DOM element to highlight the correct characters
-    debug.execute(() => {
-      const e = document.querySelector(`#${util.idToDomId(wordObject.id)}`);
-      if (!e) {
-        throw new Error("Couldn't find element");
-      }
-
-      e.classList.add("activeWord");
-      e.innerHTML = `
-        <span class="typedWord">${typedWord}</span> 
-        <span class="remainingWord">${wordObject.word.slice(
-          typedWord.length
-        )}</span>
-      `;
-    });
   };
 
   const initializeKeyboardListeners = () => {
@@ -263,7 +321,8 @@ export const createTypingEngine = () => {
       const { key } = e;
 
       if (state.currentTargetId === undefined) {
-        const newTargetId = state.activeWordFirstLetterToIdMap.get(key);
+        const wo = state.activeWordObjects.find(({ word: [fl] }) => fl === key);
+        const newTargetId = wo?.id;
         if (newTargetId) {
           const obj = state.activeWordObjects.find(
             ({ id }) => id === newTargetId
