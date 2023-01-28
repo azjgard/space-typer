@@ -2,10 +2,16 @@ import { Howl } from "howler";
 
 import click from "../../assets/sounds/click.wav";
 import explosion from "../../assets/sounds/explosion.wav";
+import song1 from "../../assets/sounds/music/billys-sacrifice.mp3";
+import song2 from "../../assets/sounds/music/crash-landing.mp3";
+import song3 from "../../assets/sounds/music/race-to-mars.mp3";
 
 const soundManager = createSoundManager({
   click,
   explosion,
+  song1,
+  song2,
+  song3,
 });
 
 export default soundManager;

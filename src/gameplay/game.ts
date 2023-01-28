@@ -104,8 +104,11 @@ export function createGame() {
     draw(defaultDraw);
   };
 
+  let onStart = () => {};
+
   function start() {
     active = true;
+    onStart();
     loop();
   }
 
@@ -124,6 +127,7 @@ export function createGame() {
     getIsActive: () => active,
     setUpdate: (updateFn: typeof update) => (update = updateFn),
     setDraw: (drawFn: typeof draw) => (draw = drawFn),
+    setStart: (fn: () => void) => (onStart = fn),
     start,
     end,
     togglePaused: () => {

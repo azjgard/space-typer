@@ -19,6 +19,7 @@ import { traverseUnitCircle } from "./utils";
 import { createBackgroundManager } from "./managers/BackgroundManager";
 import soundManager from "./managers/SoundManager";
 import { createMenuManager } from "./managers/MenuManager";
+import { randomInRange } from "./lib";
 
 export const DEBUG = true;
 export const UPDATE_INTERVAL_MS = 16.66; // 60 fps
@@ -31,6 +32,8 @@ export function initGameplay() {
   const typingEngine = createTypingEngine();
   const backgroundManager = createBackgroundManager();
   const menuManager = createMenuManager();
+
+  soundManager.play("song1");
 
   const mainMenu = menuManager.create({
     name: "main",
