@@ -49,15 +49,15 @@ export const levels: Level[] = [
         enemies: [de, de, de, de, de, de],
       },
       {
-        trigger: { type: "time", time: 3000 },
+        trigger: { type: "time", time: 6000 },
         enemies: [null, de, null, de, null, de],
       },
       {
-        trigger: { type: "time", time: 3000 },
+        trigger: { type: "time", time: 6000 },
         enemies: [de, de, de, de, de, de],
       },
       {
-        trigger: { type: "time", time: 3000 },
+        trigger: { type: "time", time: 6000 },
         enemies: [de, null, de, null, de, null],
       },
       {

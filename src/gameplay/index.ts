@@ -107,72 +107,32 @@ export function initGameplay() {
 
   const VERTICAL_PADDING = 50;
 
-  game.createEntity(Entity, {
-    id: "illustrator",
-    position: {
-      x: 0,
-      y: 0,
-    },
-    size: {
-      width: game.canvas.width,
-      height: VERTICAL_PADDING,
-    },
-    fillStyle: "red",
-  });
-  game.createEntity(Entity, {
-    id: "illustrator1",
-    position: {
-      x: 0,
-      y: game.canvas.height,
-    },
-    size: {
-      width: game.canvas.width,
-      height: VERTICAL_PADDING * -1,
-    },
-    fillStyle: "red",
-  });
-
   typingEngine.on("waveStarted", async function startWave(state) {
     const { wordObjects } = state;
     const spawnSpace = game.canvas.height - VERTICAL_PADDING * 2;
     const yMargin = Math.floor(spawnSpace / wordObjects.length);
-
-    console.log({
-      height: game.canvas.height,
-      spawnSpace,
-      yMargin,
-    });
 
     let entityIds: string[] = [];
 
     for (let i = 0; i < state.wordObjects.length; i++) {
       const awo = state.wordObjects[i];
       const entityId = enemyIdFromWordId(awo.id);
-      console.log(entityId);
 
       const position = {
         x: game.canvas.width,
         y: VERTICAL_PADDING + yMargin * i + Enemy1.height / 2,
       };
 
-      // const y = 30 + i * (Enemy1.height + 30);
       const e = game.createEntity(Enemy1, {
         id: `enemy-${awo.id}`,
         active: false,
         position,
         word: awo.word,
         endEntity,
-        fillStyle: "green",
       });
       e.activate();
       entityIds.push(entityId);
     }
-
-    // Stagger activation of enemies in the wave
-    // for (let i = 0; i < entityIds.length; i++) {
-    //   entities[entityIds[i]].activate();
-    //   await new Promise((r) => setTimeout(r, Math.random() * 800 + 1200));
-    // }
   });
 
   typingEngine.on("initializeLevel", async function initializeLevel(state) {

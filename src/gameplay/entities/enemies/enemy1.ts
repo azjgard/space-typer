@@ -2,6 +2,7 @@ import {
   ENEMY_TEXT_COLOR_DEFAULT,
   ENEMY_TEXT_FONT_DEFAULT,
 } from "../../../../config";
+import { randomInRange } from "../../lib";
 import { generateSinWave } from "../../utils";
 import Enemy, { IEnemyOptions } from "../enemy";
 
@@ -10,7 +11,7 @@ interface IEnemy1Options extends IEnemyOptions {}
 export default class Enemy1 extends Enemy {
   public static width = 64;
   public static height = 64;
-  public static startingVelocity = -30;
+  public static startingVelocity = [-30, -32] as const;
 
   initialPosition: { x: number; y: number } | null;
 
@@ -35,14 +36,17 @@ export default class Enemy1 extends Enemy {
         font: ENEMY_TEXT_FONT_DEFAULT,
       },
       size: { width: Enemy1.width, height: Enemy1.height },
-      velocity: { x: Enemy1.startingVelocity, y: 0 },
+      velocity: {
+        x: randomInRange(...Enemy1.startingVelocity),
+        y: 0,
+      },
     });
 
     this.initialPosition = options.position ?? null;
   }
 
   update(delta: number) {
-    // this.velocity.y = (this.wave.next().value as number) * 50;
+    this.velocity.y = (this.wave.next().value as number) * 20;
     super.update(delta);
   }
 }

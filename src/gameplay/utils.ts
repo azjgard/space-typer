@@ -48,8 +48,11 @@ export function traverseUnitCircle(
 }
 
 export function* generateSinWave() {
-  let traverser = traverseUnitCircle(Math.random(), 0.1, 1);
+  let traverser = traverseUnitCircle(Math.random() * 2, 0.1, 1);
   while (true) {
     yield traverser.next().y;
   }
+}
+export function numberWithinRange(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
