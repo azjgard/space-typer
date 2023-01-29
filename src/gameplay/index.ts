@@ -97,6 +97,30 @@ export function initGameplay() {
     y: 105,
   };
 
+  const currentLevelText = game.createEntity(Entity, {
+    id: "currentLevel",
+    position: {
+      x: game.canvas.width / 2,
+      y: 45,
+    },
+  });
+
+  const updateCurrentLevelText = (level: number) => {
+    currentLevelText.setText({
+      font: "30px VT323",
+      fillStyle: "yellow",
+      value: `Level ${level}`,
+    });
+  };
+  updateCurrentLevelText(0);
+
+  // currentLevelText.position = {
+  //   x:
+  //     currentLevelText.position.x +
+  //     game.context.measureText(currentLevelText.text![0].value).width / 2,
+  //   y: 45,
+  // };
+
   const player = game.createEntity(Player, {
     size: {
       width: 100,
@@ -139,7 +163,7 @@ export function initGameplay() {
   });
 
   typingEngine.on("initializeLevel", async function initializeLevel(state) {
-    console.log("Level " + state.currentLevel);
+    updateCurrentLevelText(state.currentLevel);
   });
 
   typingEngine.on("typedFullWord", function destroyEnemy(state) {
