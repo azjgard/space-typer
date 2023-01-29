@@ -130,12 +130,18 @@ export function randomInRange(min: number, max: number) {
   return Math.random() * (max - min) + min;
 }
 
-export function createDeltaTracker() {
-  let timeOld = 0;
+export interface IDeltaTracker {
+  track: (timeNow: number) => void;
+  get: () => number;
+}
+
+export function createDeltaTracker(): IDeltaTracker {
+  let timeOld = -1;
   let delta = 0;
 
   return {
     track: (timeNow: number) => {
+      if (timeOld === -1) timeOld = timeNow;
       delta = (timeNow - timeOld) / 1000;
       timeOld = timeNow;
     },

@@ -1,6 +1,6 @@
 import Enemy from "./entities/enemy";
 import Entity from "./entities/entity";
-import { createCanvas, createDeltaTracker } from "./lib";
+import { createCanvas, createDeltaTracker, IDeltaTracker } from "./lib";
 
 export function createGame() {
   const canvas = createCanvas({
@@ -25,8 +25,7 @@ export function createGame() {
       game,
     }) as InstanceType<C>;
     if (entities[entity.id]) {
-      console.log(entity.id + " is not unique");
-      throw new Error("All entities must have a unique id");
+      throw new Error(entity.id + " is not unique");
     }
 
     // TODO: allow registering custom entity types with the engines
@@ -64,7 +63,7 @@ export function createGame() {
     enemies = {};
   }
 
-  const deltaTracker = createDeltaTracker();
+  let deltaTracker: IDeltaTracker | null = null;
 
   const defaultUpdate = (delta: number) => {
     Object.entries(entities).forEach(([, entity]) => {
@@ -89,27 +88,29 @@ export function createGame() {
     if (!active) return;
 
     // update the time since the last frame
-    deltaTracker.track(timeNow);
+    deltaTracker!.track(timeNow);
 
     // get the time since the last frame
-    const delta = deltaTracker.get();
+    const delta = deltaTracker!.get();
 
     // call the user-defined update method
     update(delta, defaultUpdate);
 
     context.clearRect(0, 0, canvas.width, canvas.height);
-    requestAnimationFrame(loop);
 
     // call the user-defined draw method
     draw(defaultDraw);
+
+    requestAnimationFrame(loop);
   };
 
   let onStart = () => {};
 
   function start() {
     active = true;
+    deltaTracker = createDeltaTracker();
     onStart();
-    loop();
+    requestAnimationFrame(loop);
   }
 
   function end() {

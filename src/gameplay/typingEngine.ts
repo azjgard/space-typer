@@ -360,7 +360,6 @@ export const createTypingEngine = () => {
       initializeLevel(1);
       initializeKeyboardListeners();
     },
-    getState: () => ({ ...state }),
     on<E extends keyof TypingEngineEvents>(
       e: E,
       callback: (arg: TypingEngineEvents[E]) => void
