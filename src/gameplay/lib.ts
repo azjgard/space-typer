@@ -140,10 +140,17 @@ export function createDeltaTracker(): IDeltaTracker {
   let delta = 0;
 
   return {
-    track: (timeNow: number) => {
-      if (timeOld === -1) timeOld = timeNow;
-      delta = (timeNow - timeOld) / 1000;
-      timeOld = timeNow;
+    track: (elapsedSinceTimeOrigin: number) => {
+      // https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp#the_time_origin
+      //
+      // Must initialize `timeOld` the first time that this is called to
+      // avoid the first `delta` value reflected the time elapsed since the
+      // time origin of the document instead of the time elapsed since the initialization
+      // of the delta tracker.
+      if (timeOld === -1) timeOld = elapsedSinceTimeOrigin;
+
+      delta = (elapsedSinceTimeOrigin - timeOld) / 1000;
+      timeOld = elapsedSinceTimeOrigin;
     },
     get: () => delta,
   };
