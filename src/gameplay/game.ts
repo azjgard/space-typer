@@ -117,6 +117,10 @@ export function createGame() {
     clearEntities();
   }
 
+  const keyDownListeners: (() => void)[] = [];
+
+  function onKeyDown() {}
+
   var game = {
     createEntity,
     removeEntity,
