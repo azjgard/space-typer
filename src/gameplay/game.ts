@@ -105,21 +105,29 @@ export function createGame() {
   };
 
   let onStart = () => {};
+  const keyDownListeners: ((e: KeyboardEvent) => void)[] = [];
+  const _onKeyDown = (e: KeyboardEvent) => {
+    const { ctrlKey, metaKey } = e;
+    if (!(ctrlKey || metaKey)) e.preventDefault();
+    keyDownListeners.forEach((fn) => fn(e));
+  };
 
   function start() {
     active = true;
     deltaTracker = createDeltaTracker();
     onStart();
     requestAnimationFrame(loop);
+    document.addEventListener("keydown", _onKeyDown);
   }
 
   function end() {
     clearEntities();
+    document.removeEventListener("keydown", _onKeyDown);
   }
 
-  const keyDownListeners: (() => void)[] = [];
-
-  function onKeyDown() {}
+  function onKeyDown(fn: (e: KeyboardEvent) => void) {
+    keyDownListeners.push(fn);
+  }
 
   var game = {
     createEntity,
@@ -129,6 +137,7 @@ export function createGame() {
     enemies,
     canvas,
     context,
+    onKeyDown,
     getIsActive: () => active,
     setUpdate: (updateFn: typeof update) => (update = updateFn),
     setDraw: (drawFn: typeof draw) => (draw = drawFn),

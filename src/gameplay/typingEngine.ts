@@ -316,51 +316,57 @@ export const createTypingEngine = () => {
     registeredEvents.updateCurrentlyTypedWord.forEach((cb) => cb(state));
   };
 
-  const initializeKeyboardListeners = () => {
-    document.addEventListener("keydown", (e) => {
-      e.preventDefault();
-      const { key } = e;
+  const ignoreKeys = new Set([
+    "Backspace",
+    "Tab",
+    "Enter",
+    "Escape",
+    "Shift",
+    "Control",
+    "Alt",
+  ]);
 
-      if (state.currentTargetId === undefined) {
-        const wo = state.activeWordObjects.find(({ word: [fl] }) => fl === key);
-        const newTargetId = wo?.id;
-        if (newTargetId) {
-          const obj = state.activeWordObjects.find(
-            ({ id }) => id === newTargetId
-          );
-          if (!obj) {
-            throw new Error("Couldn't find active word");
-          }
+  const onKeyDown = (e: KeyboardEvent) => {
+    const { key } = e;
+    if (ignoreKeys.has(key)) return;
 
-          state.currentTargetId = newTargetId;
-          updateCurrentlyTypedWord(obj, key);
-        } else {
-          handleIncorrectKey(key);
-        }
-        return;
-      }
-
-      if (key === state.nextExpectedCharacter) {
+    if (state.currentTargetId === undefined) {
+      const wo = state.activeWordObjects.find(({ word: [fl] }) => fl === key);
+      const newTargetId = wo?.id;
+      if (newTargetId) {
         const obj = state.activeWordObjects.find(
-          ({ id }) => id === state.currentTargetId
+          ({ id }) => id === newTargetId
         );
         if (!obj) {
-          console.error("Couldn't find active word");
-          resetWordState();
-          return;
+          throw new Error("Couldn't find active word");
         }
-        updateCurrentlyTypedWord(obj, state.currentTypedWord + key);
+
+        state.currentTargetId = newTargetId;
+        updateCurrentlyTypedWord(obj, key);
       } else {
         handleIncorrectKey(key);
       }
-    });
+      return;
+    }
+
+    if (key === state.nextExpectedCharacter) {
+      const obj = state.activeWordObjects.find(
+        ({ id }) => id === state.currentTargetId
+      );
+      if (!obj) {
+        console.error("Couldn't find active word");
+        resetWordState();
+        return;
+      }
+      updateCurrentlyTypedWord(obj, state.currentTypedWord + key);
+    } else {
+      handleIncorrectKey(key);
+    }
   };
 
   return {
-    start: () => {
-      initializeLevel(1);
-      initializeKeyboardListeners();
-    },
+    onKeyDown,
+    start: () => initializeLevel(1),
     on<E extends keyof TypingEngineEvents>(
       e: E,
       callback: (arg: TypingEngineEvents[E]) => void

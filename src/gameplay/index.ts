@@ -33,6 +33,8 @@ export function initGameplay() {
   const backgroundManager = createBackgroundManager();
   const menuManager = createMenuManager();
 
+  game.onKeyDown(typingEngine.onKeyDown);
+
   soundManager.play("song1");
 
   const mainMenu = menuManager.create({
@@ -66,6 +68,13 @@ export function initGameplay() {
         console.log("quit");
       },
     }),
+  });
+
+  game.onKeyDown((e) => {
+    const { key } = e;
+    if (key === "Escape") {
+      console.log("escape key pressed");
+    }
   });
 
   const { entities, enemies } = game;
