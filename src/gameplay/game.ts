@@ -84,8 +84,10 @@ export function createGame() {
   let draw: (defaultFn: typeof defaultDraw) => void = () => defaultDraw();
 
   const loop = (timeNow = 0) => {
-    // no updating if the game is inactive
-    if (!active) return;
+    requestAnimationFrame(loop);
+
+    // no updating if the game is inactive or paused
+    if (!(active && !paused)) return;
 
     // update the time since the last frame
     deltaTracker!.track(timeNow);
@@ -100,8 +102,6 @@ export function createGame() {
 
     // call the user-defined draw method
     draw(defaultDraw);
-
-    requestAnimationFrame(loop);
   };
 
   let onStart = () => {};
@@ -145,7 +145,15 @@ export function createGame() {
     start,
     end,
     togglePaused: () => {
+      // "pausing" could cause weird behavior if
+      // allowed while the game is not active
+      if (!active) return;
+
       paused = !paused;
+
+      // Reset origin time to avoid the delta continuing
+      // to accrue while the game is paused
+      if (paused) deltaTracker?.resetOriginTime();
     },
     getIsPaused: () => paused,
   };

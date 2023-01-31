@@ -44,6 +44,10 @@ class Menu {
   hide() {
     this.container.classList.remove("active");
   }
+
+  toggle() {
+    this.container.classList.toggle("active");
+  }
 }
 
 type CreateMenuOptions = Pick<MenuOptions, "name"> & {

@@ -133,6 +133,7 @@ export function randomInRange(min: number, max: number) {
 export interface IDeltaTracker {
   track: (timeNow: number) => void;
   get: () => number;
+  resetOriginTime: () => void;
 }
 
 export function createDeltaTracker(): IDeltaTracker {
@@ -140,6 +141,7 @@ export function createDeltaTracker(): IDeltaTracker {
   let delta = 0;
 
   return {
+    resetOriginTime: () => (timeOld = -1),
     track: (elapsedSinceTimeOrigin: number) => {
       // https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp#the_time_origin
       //

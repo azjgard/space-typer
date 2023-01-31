@@ -73,7 +73,8 @@ export function initGameplay() {
   game.onKeyDown((e) => {
     const { key } = e;
     if (key === "Escape") {
-      console.log("escape key pressed");
+      game.togglePaused();
+      pauseMenu.toggle();
     }
   });
 
