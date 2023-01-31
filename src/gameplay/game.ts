@@ -15,6 +15,7 @@ export function createGame() {
   let paused = false;
   let entities: { [entityId: string]: Entity } = {};
   let enemies: { [enemyId: string]: Enemy } = {};
+  let keyDownListeners: ((e: KeyboardEvent) => void)[] = [];
 
   function createEntity<
     E extends Entity,
@@ -41,6 +42,7 @@ export function createGame() {
   }
 
   function removeEntity<E extends Entity>(entity: E) {
+    console.log("entity", entity);
     if (!entity.id) {
       throw new Error("Cannot remove an entity without an id");
     }
@@ -56,11 +58,6 @@ export function createGame() {
     }
 
     delete entities[entity.id];
-  }
-
-  function clearEntities() {
-    entities = {};
-    enemies = {};
   }
 
   let deltaTracker: IDeltaTracker | null = null;
@@ -84,8 +81,6 @@ export function createGame() {
   let draw: (defaultFn: typeof defaultDraw) => void = () => defaultDraw();
 
   const loop = (timeNow = 0) => {
-    requestAnimationFrame(loop);
-
     // no updating if the game is inactive or paused
     if (!(active && !paused)) return;
 
@@ -102,10 +97,11 @@ export function createGame() {
 
     // call the user-defined draw method
     draw(defaultDraw);
+
+    requestAnimationFrame(loop);
   };
 
   let onStart = () => {};
-  const keyDownListeners: ((e: KeyboardEvent) => void)[] = [];
   const _onKeyDown = (e: KeyboardEvent) => {
     const { ctrlKey, metaKey } = e;
     if (!(ctrlKey || metaKey)) e.preventDefault();
@@ -121,7 +117,11 @@ export function createGame() {
   }
 
   function end() {
-    clearEntities();
+    active = false;
+    paused = false;
+    entities = {};
+    enemies = {};
+    keyDownListeners = [];
     document.removeEventListener("keydown", _onKeyDown);
   }
 
@@ -132,7 +132,6 @@ export function createGame() {
   var game = {
     createEntity,
     removeEntity,
-    clearEntities,
     entities,
     enemies,
     canvas,
@@ -154,6 +153,8 @@ export function createGame() {
       // Reset origin time to avoid the delta continuing
       // to accrue while the game is paused
       if (paused) deltaTracker?.resetOriginTime();
+
+      if (active && !paused) requestAnimationFrame(loop);
     },
     getIsPaused: () => paused,
   };

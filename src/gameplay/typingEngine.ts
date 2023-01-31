@@ -134,6 +134,7 @@ interface WordObject {
 }
 
 export interface TypingEngineState {
+  active: boolean;
   currentLevel: number;
   currentTargetId: string | undefined;
   currentTypedWord: string;
@@ -152,14 +153,17 @@ export interface TypingEngineEvents {
   typedFullWord: TypingEngineState & { typedFullWordId: string };
 }
 
+const DEFAULT_STATE: TypingEngineState = {
+  active: false,
+  currentLevel: 0,
+  currentTargetId: undefined,
+  currentTypedWord: "",
+  nextExpectedCharacter: undefined,
+  activeWordObjects: [],
+};
+
 export const createTypingEngine = () => {
-  let state: TypingEngineState = {
-    currentLevel: 0,
-    currentTargetId: undefined,
-    currentTypedWord: "",
-    nextExpectedCharacter: undefined,
-    activeWordObjects: [],
-  };
+  let state = { ...DEFAULT_STATE };
 
   const registeredEvents: {
     [key in keyof TypingEngineEvents]: ((
@@ -183,6 +187,8 @@ export const createTypingEngine = () => {
   };
 
   const initializeLevel = async (level: number) => {
+    if (!state.active) return;
+
     state.currentLevel = level;
 
     const currentLevel = levels[level - 1];
@@ -200,7 +206,7 @@ export const createTypingEngine = () => {
 
     if (!state.activeWordObjects.length) {
       await initializeLevel(level + 1);
-    } else {
+    } else if (state.active) {
       await new Promise<void>((resolve) => {
         const cb = (state: TypingEngineState) => {
           // there are still one or more waves left,
@@ -222,6 +228,8 @@ export const createTypingEngine = () => {
     }
 
     async function processWaves(waveIndex = 0) {
+      if (!state.active) return;
+
       const currentWave = currentLevel.waves[waveIndex];
 
       const wordsForWave = generateWaveWords(currentLevel, currentWave);
@@ -241,7 +249,7 @@ export const createTypingEngine = () => {
       );
 
       const nextWave = currentLevel.waves[waveIndex + 1];
-      if (nextWave) {
+      if (nextWave && state.active) {
         await new Promise<void>((resolve) => {
           if (nextWave.trigger.type === "first") {
             throw new Error(
@@ -366,7 +374,17 @@ export const createTypingEngine = () => {
 
   return {
     onKeyDown,
-    start: () => initializeLevel(1),
+    start: () => {
+      state.active = true;
+      initializeLevel(1);
+    },
+    end: () => {
+      // there is internal logic that uses this method to listen
+      // for the end of the wave, so we need to call it (if it exists)
+      // to ensure that there are no hanging promises
+      registeredEvents.waveEnded.forEach((fn) => fn(state));
+      state = { ...DEFAULT_STATE };
+    },
     on<E extends keyof TypingEngineEvents>(
       e: E,
       callback: (arg: TypingEngineEvents[E]) => void

@@ -14,12 +14,9 @@ import Entity from "./entities/entity";
 import Enemy from "./entities/enemy";
 import Enemy1 from "./entities/enemies/enemy1";
 
-import { traverseUnitCircle } from "./utils";
-
 import { createBackgroundManager } from "./managers/BackgroundManager";
-import soundManager from "./managers/SoundManager";
 import { createMenuManager } from "./managers/MenuManager";
-import { randomInRange } from "./lib";
+import soundManager from "./managers/SoundManager";
 
 export const DEBUG = true;
 export const UPDATE_INTERVAL_MS = 16.66; // 60 fps
@@ -41,9 +38,11 @@ export function initGameplay() {
     name: "main",
     getClickHandlers: ({ getMenu }) => ({
       play: () => {
+        console.log(game);
+        console.log(typingEngine);
         getMenu("main")?.hide();
-        typingEngine.start();
         game.start();
+        typingEngine.start();
       },
       options: () => {
         console.log("Options");
@@ -77,8 +76,6 @@ export function initGameplay() {
       pauseMenu.toggle();
     }
   });
-
-  const { entities, enemies } = game;
 
   const endEntity = game.createEntity(Entity, {
     id: "endEntity",
@@ -145,6 +142,8 @@ export function initGameplay() {
   const VERTICAL_PADDING = 50;
 
   typingEngine.on("waveStarted", async function startWave(state) {
+    if (!game.getIsActive()) return;
+
     const { wordObjects } = state;
     const spawnSpace = game.canvas.height - VERTICAL_PADDING * 2;
     const yMargin = Math.floor(spawnSpace / wordObjects.length);
@@ -173,11 +172,14 @@ export function initGameplay() {
   });
 
   typingEngine.on("initializeLevel", async function initializeLevel(state) {
+    if (!game.getIsActive()) return;
     updateCurrentLevelText(state.currentLevel);
   });
 
   typingEngine.on("typedFullWord", function destroyEnemy(state) {
-    const destroyedEnemy = enemies[enemyIdFromWordId(state.typedFullWordId)];
+    if (!game.getIsActive()) return;
+    const destroyedEnemy =
+      game.enemies[enemyIdFromWordId(state.typedFullWordId)];
     if (!destroyedEnemy) {
       return;
     }
@@ -189,13 +191,15 @@ export function initGameplay() {
   });
 
   typingEngine.on("updateCurrentlyTypedWord", function attackEnemy(state) {
+    if (!game.getIsActive()) return;
     if (!state.currentTargetId) {
       // This is a valid scenario (apparently?) when an enemy who is in the middle
       // of being attacked ends up running into the end barrier
       return;
     }
 
-    const targetedEnemy = enemies[enemyIdFromWordId(state.currentTargetId)];
+    const targetedEnemy =
+      game.enemies[enemyIdFromWordId(state.currentTargetId)];
     if (!targetedEnemy) {
       throw new Error("Can't attack enemy that doesn't exist");
     }
@@ -226,7 +230,7 @@ export function initGameplay() {
 
   game.setUpdate((delta) => {
     backgroundManager.update(delta);
-    Object.entries(entities).forEach(([, entity]) => {
+    Object.entries(game.entities).forEach(([, entity]) => {
       entity.update(delta);
       if (entity instanceof Enemy) {
         const reachedEnd = entity.isCollidingWith(endEntity);
@@ -251,6 +255,8 @@ export function initGameplay() {
 
   function gameOver(_score: number) {
     game.end();
+    typingEngine.end();
+    mainMenu.toggle();
     console.log("Game over!");
   }
 }

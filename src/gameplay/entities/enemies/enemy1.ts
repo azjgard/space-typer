@@ -11,7 +11,7 @@ interface IEnemy1Options extends IEnemyOptions {}
 export default class Enemy1 extends Enemy {
   public static width = 64;
   public static height = 64;
-  public static startingVelocity = [-30, -32] as const;
+  public static startingVelocity = [-30, -200] as const;
 
   initialPosition: { x: number; y: number } | null;
 
