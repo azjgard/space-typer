@@ -318,6 +318,7 @@ export const createTypingEngine = () => {
 
   const initializeKeyboardListeners = () => {
     document.addEventListener("keydown", (e) => {
+      e.preventDefault();
       const { key } = e;
 
       if (state.currentTargetId === undefined) {
