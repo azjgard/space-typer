@@ -42,7 +42,7 @@ export function initGameplay() {
 
   game.onKeyDown(typingEngine.onKeyDown);
 
-  soundManager.play("song1");
+  soundManager.play("song3");
 
   const mainMenu = menuManager.create({
     name: "main",

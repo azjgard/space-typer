@@ -1,126 +1,41 @@
 import { Level, levels, Wave } from "./levels";
 
-type GenerateWordsOptions = {
-  count: number;
-} & (
-  | {
-      length: number;
-    }
-  | {
-      minLength: number;
-      maxLength: number;
-    }
-);
+import list1 from "../assets/words/1.json";
+import list2 from "../assets/words/2.json";
+import list3 from "../assets/words/3.json";
+import list4 from "../assets/words/4.json";
+import list5 from "../assets/words/5.json";
+import list6 from "../assets/words/6.json";
+import list7 from "../assets/words/7.json";
+import { randomInRange } from "./lib";
 
-const generateWords = (
-  possibleKeys: string[],
-  options: GenerateWordsOptions
-) => {
-  const words: string[] = [];
-  const wordCount = Math.min(possibleKeys.length, options.count);
-  if (wordCount !== options.count) {
-    console.warn(
-      `Only generating ${wordCount} words -- 
-      can only generate as many words as there 
-      are unique letters since each word needs 
-      to start with a different letter`
-    );
-  }
-
-  let availableFirstLetters = [...possibleKeys];
-  for (let wordIndex = 0; wordIndex < wordCount; wordIndex++) {
-    let word = "";
-    const wordLength =
-      "length" in options
-        ? options.length
-        : Math.floor(Math.random() * (options.maxLength - options.minLength)) +
-          options.minLength;
-
-    for (
-      let characterIndex = 0;
-      characterIndex < wordLength;
-      characterIndex++
-    ) {
-      // we enforce that the first letter of each word is different so
-      // that it's clear which word the user is targeting when they start
-      // typing for the first time
-      if (characterIndex === 0) {
-        const randomFirstLetterIndex = Math.floor(
-          Math.random() * availableFirstLetters.length
-        );
-        const randomFirstLetter = availableFirstLetters[randomFirstLetterIndex];
-        availableFirstLetters.splice(randomFirstLetterIndex, 1);
-        word += randomFirstLetter;
-        continue;
-      }
-
-      const randomIndex = Math.floor(Math.random() * possibleKeys.length);
-      word += possibleKeys[randomIndex];
-    }
-
-    words.push(word);
-  }
-
-  return words;
-};
+const lists = [list1, list2, list3, list4, list5, list6, list7] as const;
 
 const generateWaveWords = (level: Level, wave: Wave) => {
-  // TODO: use real words instead of generating random phrases
   const count = wave.characterCount ?? level.characterCount;
-
-  // available characters to compose words from
-  const characters = level.characters;
-
-  // we need at least as many characters to choose from as there
-  // are enemies being generated in the wave
-  if (characters.length < count) {
-    throw new Error(
-      `Not enough characters (${characters.length}) for the count (${count})`
-    );
-  }
 
   // the words in a wave
   const words: string[] = [];
+  const firstLettersUsed = new Set<string>();
 
-  let availableFirstLetters = [...characters];
-  for (let e = 0; e < wave.enemies.length; e++) {
-    const enemy = wave.enemies[e];
-    if (!enemy) continue;
+  for (let i = 0; i < wave.enemies.length; i++) {
+    if (!wave.enemies[i]) continue;
 
-    let word = "";
+    const listNumber = Array.isArray(count)
+      ? Math.round(randomInRange(...count))
+      : count;
+    const list = lists[listNumber - 1];
 
-    for (let c = 0; c < count; c++) {
-      // we enforce that the first letter of each word is different so
-      // that it's clear which word the user is targeting when they start
-      // typing for the first time
-      if (c === 0) {
-        const randomFirstLetterIndex = Math.floor(
-          Math.random() * availableFirstLetters.length
-        );
-        const randomFirstLetter = availableFirstLetters[randomFirstLetterIndex];
-        availableFirstLetters.splice(randomFirstLetterIndex, 1);
-        word += randomFirstLetter;
-        continue;
-      }
+    let word;
+    do {
+      word = list[Math.floor(Math.random() * list.length)];
+    } while (firstLettersUsed.has(word[0]));
 
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      word += characters[randomIndex];
-    }
-
+    firstLettersUsed.add(word[0]);
     words.push(word);
   }
 
   return words;
-};
-
-const getWordGenerationOptionsByLevel = (
-  level: number
-): GenerateWordsOptions => {
-  // TODO: custom options per level
-  return {
-    count: level * 2,
-    length: 4,
-  };
 };
 
 const handleIncorrectKey = (_keyTyped: string) => {
