@@ -63,6 +63,7 @@ body {
 }
 
 .menu {
+  text-align: center;
   z-index: 999;
   position: fixed;
   top: 0;

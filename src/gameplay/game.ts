@@ -42,7 +42,6 @@ export function createGame() {
   }
 
   function removeEntity<E extends Entity>(entity: E) {
-    console.log("entity", entity);
     if (!entity.id) {
       throw new Error("Cannot remove an entity without an id");
     }

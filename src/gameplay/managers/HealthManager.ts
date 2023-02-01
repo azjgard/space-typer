@@ -11,6 +11,10 @@ export default class HealthManager extends Entity {
 
   health = HealthManager.MAX_HEALTH;
 
+  reset() {
+    this.health = HealthManager.MAX_HEALTH;
+  }
+
   draw() {
     super.draw();
     if (!this.active) return;

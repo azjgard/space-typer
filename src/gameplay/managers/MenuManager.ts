@@ -37,6 +37,12 @@ class Menu {
     });
   }
 
+  setValue(key: string, value: string | number) {
+    const valueContainer = this.container.querySelector(`.value.${key}`);
+    if (!valueContainer) return;
+    valueContainer.innerHTML = String(value);
+  }
+
   show() {
     this.container.classList.add("active");
   }

@@ -24,6 +24,16 @@ export const FRAME_SIZE_MS = 1000 / 60;
 
 const enemyIdFromWordId = (wordId: string) => `enemy-${wordId}`;
 
+const quit = () => {
+  window.location.hash = "";
+  window.location.reload();
+};
+
+const restart = () => {
+  window.location.hash = "#restart";
+  window.location.reload();
+};
+
 export function initGameplay() {
   const game = createGame();
   const typingEngine = createTypingEngine();
@@ -38,17 +48,9 @@ export function initGameplay() {
     name: "main",
     getClickHandlers: ({ getMenu }) => ({
       play: () => {
-        console.log(game);
-        console.log(typingEngine);
         getMenu("main")?.hide();
         game.start();
         typingEngine.start();
-      },
-      options: () => {
-        console.log("Options");
-      },
-      "high-scores": () => {
-        console.log("High Scores");
       },
     }),
   });
@@ -60,11 +62,16 @@ export function initGameplay() {
         game.togglePaused();
         getMenu("pause")?.hide();
       },
-      restart: () => {
-        console.log("restart");
-      },
-      quit: () => {
-        console.log("quit");
+      restart,
+      quit,
+    }),
+  });
+
+  const gameOverMenu = menuManager.create({
+    name: "game-over",
+    getClickHandlers: ({ getMenu }) => ({
+      "play-again": () => {
+        restart();
       },
     }),
   });
@@ -120,13 +127,6 @@ export function initGameplay() {
     });
   };
   updateCurrentLevelText(0);
-
-  // currentLevelText.position = {
-  //   x:
-  //     currentLevelText.position.x +
-  //     game.context.measureText(currentLevelText.text![0].value).width / 2,
-  //   y: 45,
-  // };
 
   const player = game.createEntity(Player, {
     size: {
@@ -253,10 +253,16 @@ export function initGameplay() {
     healthManager.draw();
   });
 
-  function gameOver(_score: number) {
+  if (window.location.hash.includes("restart")) {
+    mainMenu.hide();
+    game.start();
+    typingEngine.start();
+  }
+
+  function gameOver(score: number) {
     game.end();
     typingEngine.end();
-    mainMenu.toggle();
-    console.log("Game over!");
+    gameOverMenu.setValue("score", score);
+    gameOverMenu.toggle();
   }
 }
