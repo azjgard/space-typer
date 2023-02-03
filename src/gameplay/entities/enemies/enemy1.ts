@@ -18,14 +18,49 @@ export default class Enemy1 extends Enemy {
   wave = generateSinWave();
 
   constructor(options: IEnemy1Options) {
+    const length = options.word.length;
+
+    let sx: number, sy: number;
+    switch (length) {
+      case 0:
+        (sx = 0), (sy = 0);
+        break;
+      case 1:
+        (sx = 1), (sy = 0);
+        break;
+      case 2:
+        (sx = 2), (sy = 0);
+        break;
+      case 3:
+        (sx = 0), (sy = 1);
+        break;
+      case 4:
+        (sx = 1), (sy = 1);
+        break;
+      case 5:
+        (sx = 2), (sy = 1);
+        break;
+      case 6:
+        (sx = 0), (sy = 2);
+        break;
+      case 7:
+        (sx = 1), (sy = 2);
+        break;
+      case 8:
+        (sx = 2), (sy = 2);
+        break;
+      default:
+        throw new Error("words too long bruh");
+    }
+
     super({
       ...options,
       type: "enemy-1",
       sprite: {
         path: "enemyShip",
         sheet: {
-          sx: 32 * 2,
-          sy: 32 * 2,
+          sx: sx * 32,
+          sy: sy * 32,
           sWidth: 32,
           sHeight: 32,
         },
