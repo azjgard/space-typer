@@ -1,5 +1,14 @@
 ## Immediate Features
 
+Use a separate canvas just for rendering images off of.
+
+- draw to the canvas
+- get the data url
+- new Image()
+- image.src = dataUrl;
+- draw that image on the main canvas
+- scroll its position within the engine instead of scrolling actual canvas elements
+
 - [x] Preload all the image and sound assets for better perf in prod
 - [x] Apply delta to all movement to get rid of choppiness
 - [x] Gap between procedural canvases
