@@ -1,3 +1,4 @@
+import canAutoplay from "can-autoplay";
 import { createGame } from "./game";
 import { createTypingEngine } from "./typingEngine";
 import {
@@ -17,6 +18,7 @@ import Enemy1 from "./entities/enemies/enemy1";
 import { createBackgroundManager } from "./managers/BackgroundManager";
 import { createMenuManager } from "./managers/MenuManager";
 import soundManager from "./managers/SoundManager";
+import { createMusicManager } from "./managers/MusicManager";
 
 export const DEBUG = true;
 export const UPDATE_INTERVAL_MS = 16.66; // 60 fps
@@ -41,10 +43,9 @@ export function initGameplay() {
   });
   const backgroundManager = createBackgroundManager();
   const menuManager = createMenuManager();
+  const musicManager = createMusicManager();
 
   game.onKeyDown(typingEngine.onKeyDown);
-
-  soundManager.play("song3");
 
   const mainMenu = menuManager.create({
     name: "main",
@@ -79,10 +80,13 @@ export function initGameplay() {
   });
 
   game.onKeyDown((e) => {
+    if (mainMenu.isVisible() || gameOverMenu.isVisible()) return;
+
     const { key } = e;
     if (key === "Escape") {
       game.togglePaused();
       pauseMenu.toggle();
+      musicManager.togglePaused();
     }
   });
 
@@ -256,6 +260,32 @@ export function initGameplay() {
     healthManager.draw();
   });
 
+  const audioAllowedMenu = menuManager.create({
+    name: "audio-allowed",
+    getClickHandlers: () => ({
+      yes: () => {
+        musicManager.start();
+        audioAllowedMenu.hide();
+      },
+      no: () => {
+        audioAllowedMenu.hide();
+        localStorage.setItem("audio-denied", "true");
+      },
+    }),
+  });
+
+  canAutoplay.audio().then(({ result: canAutoplay }) => {
+    if (canAutoplay) {
+      musicManager.start();
+      return;
+    }
+
+    const alreadyAsked = localStorage.getItem("audio-denied") === "true";
+    if (alreadyAsked) return;
+
+    audioAllowedMenu.show();
+  });
+
   if (window.location.hash.includes("restart")) {
     mainMenu.hide();
     game.start();
@@ -265,6 +295,8 @@ export function initGameplay() {
   function gameOver(score: number) {
     game.end();
     typingEngine.end();
+    musicManager.togglePaused();
+    soundManager.play("gameover");
     gameOverMenu.setValue("score", score);
     gameOverMenu.toggle();
   }

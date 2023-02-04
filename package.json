@@ -13,8 +13,10 @@
     "vite": "^4.0.0"
   },
   "dependencies": {
+    "@types/can-autoplay": "^3.0.1",
     "@types/howler": "^2.2.7",
     "@types/uuid": "^9.0.0",
+    "can-autoplay": "^3.0.2",
     "howler": "^2.2.3",
     "simplex-noise": "^4.0.1",
     "uuid": "^9.0.0"

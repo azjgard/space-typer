@@ -99,3 +99,7 @@ body {
 .menu__content *:not(:last-child) {
   margin-bottom: 14px;
 }
+
+.menu.audio-allowed {
+  background-color: rgba(0, 0, 0, 0.9);
+}

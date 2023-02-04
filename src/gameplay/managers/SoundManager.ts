@@ -6,6 +6,7 @@ import song1 from "../../assets/sounds/music/billys-sacrifice.mp3";
 import song2 from "../../assets/sounds/music/crash-landing.mp3";
 import song3 from "../../assets/sounds/music/race-to-mars.mp3";
 import levelup from "../../assets/sounds/levelup.wav";
+import gameover from "../../assets/sounds/gameover.wav";
 
 const soundManager = createSoundManager({
   click,
@@ -14,6 +15,7 @@ const soundManager = createSoundManager({
   song2,
   song3,
   levelup,
+  gameover,
 });
 
 export default soundManager;
@@ -22,7 +24,7 @@ function createSoundManager<T extends Record<string, any>>(sounds: T) {
   const cache: Map<string, Howl> = new Map();
 
   Object.entries(sounds).forEach(([key, value]) => {
-    const howl = new Howl({ src: [value] });
+    const howl = new Howl({ preload: true, src: [value] });
     cache.set(key, howl);
   });
 
@@ -34,7 +36,8 @@ function createSoundManager<T extends Record<string, any>>(sounds: T) {
         sound = new Howl({ src: [path as string] });
         cache.set(p, sound);
       }
-      return sound.play();
+      const id = sound.play();
+      return id;
     },
     get: (path: keyof T) => {
       let p = path as string;

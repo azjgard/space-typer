@@ -4,4 +4,7 @@ https://sfxr.me/#7BMHBGRuq4537g4MKVpAHbmL5CKFzvtNSqiSDxDBDVFzz8CAgYfYoqXFWksgs2u
 powerup.wav
 https://sfxr.me/#34T6PkomJHcW4Vi85v8AHmNmbEX3GDykYYXF1Xt9F5xXLBudt2dx4be3mAggq7oQsMgQpqT9BNPjNtH5hW6EppGng3yrpdYQx8CjE6GRY4VUqVWqoxt76mfeP
 
+gameover.wav
+https://sfxr.me/#34T6PkxkYFEbYGL7G4a3qTGTP9Tkow2mDLqWtMQR6kqCYKZZ9EMr1mCHsvevwkcPaiWAut2p3g8WUqdNBrMfXiDqsW5rmA5ejHuoLNF18ktx4JzhRfQHETC4f
+
 

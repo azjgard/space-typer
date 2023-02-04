@@ -54,6 +54,10 @@ class Menu {
   toggle() {
     this.container.classList.toggle("active");
   }
+
+  isVisible() {
+    return this.container.classList.contains("active");
+  }
 }
 
 type CreateMenuOptions = Pick<MenuOptions, "name"> & {
