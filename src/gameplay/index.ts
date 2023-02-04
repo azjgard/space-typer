@@ -36,7 +36,9 @@ const restart = () => {
 
 export function initGameplay() {
   const game = createGame();
-  const typingEngine = createTypingEngine();
+  const typingEngine = createTypingEngine({
+    setTimeout: game.setTimeout,
+  });
   const backgroundManager = createBackgroundManager();
   const menuManager = createMenuManager();
 

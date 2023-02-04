@@ -77,7 +77,9 @@ const DEFAULT_STATE: TypingEngineState = {
   activeWordObjects: [],
 };
 
-export const createTypingEngine = () => {
+export const createTypingEngine = (args: {
+  setTimeout: (cb: () => void, timeout: number) => void;
+}) => {
   let state = { ...DEFAULT_STATE };
 
   const registeredEvents: {
@@ -186,7 +188,7 @@ export const createTypingEngine = () => {
           }
 
           if (nextWave.trigger.type === "time") {
-            setTimeout(resolve, nextWave.trigger.time);
+            args.setTimeout(resolve, nextWave.trigger.time);
             return;
           }
 

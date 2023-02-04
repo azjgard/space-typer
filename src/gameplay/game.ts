@@ -16,6 +16,11 @@ export function createGame() {
   let entities: { [entityId: string]: Entity } = {};
   let enemies: { [enemyId: string]: Enemy } = {};
   let keyDownListeners: ((e: KeyboardEvent) => void)[] = [];
+  let timeouts: {
+    currentTime: number;
+    totalTime: number;
+    cb: () => void;
+  }[] = [];
 
   function createEntity<
     E extends Entity,
@@ -92,6 +97,17 @@ export function createGame() {
     // call the user-defined update method
     update(delta, defaultUpdate);
 
+    // process timeouts that need to be hooked into the engine
+    timeouts = timeouts.reduce((acc, t) => {
+      t.currentTime += delta;
+      if (t.currentTime >= t.totalTime / 1000) {
+        t.cb();
+        return acc;
+      }
+      return [...acc, t];
+    }, [] as typeof timeouts);
+
+    // clear frame before the next render
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     // call the user-defined draw method
@@ -128,6 +144,14 @@ export function createGame() {
     keyDownListeners.push(fn);
   }
 
+  function setTimeout(cb: () => void, timeout: number) {
+    timeouts.push({
+      cb,
+      currentTime: 0,
+      totalTime: timeout,
+    });
+  }
+
   var game = {
     createEntity,
     removeEntity,
@@ -140,6 +164,7 @@ export function createGame() {
     setUpdate: (updateFn: typeof update) => (update = updateFn),
     setDraw: (drawFn: typeof draw) => (draw = drawFn),
     setStart: (fn: () => void) => (onStart = fn),
+    setTimeout,
     start,
     end,
     togglePaused: () => {
