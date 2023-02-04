@@ -175,6 +175,7 @@ export function initGameplay() {
 
   typingEngine.on("initializeLevel", async function initializeLevel(state) {
     if (!game.getIsActive()) return;
+    soundManager.play("levelup");
     updateCurrentLevelText(state.currentLevel);
   });
 

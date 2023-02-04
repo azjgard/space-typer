@@ -5,6 +5,7 @@ import explosion from "../../assets/sounds/explosion.wav";
 import song1 from "../../assets/sounds/music/billys-sacrifice.mp3";
 import song2 from "../../assets/sounds/music/crash-landing.mp3";
 import song3 from "../../assets/sounds/music/race-to-mars.mp3";
+import levelup from "../../assets/sounds/levelup.wav";
 
 const soundManager = createSoundManager({
   click,
@@ -12,6 +13,7 @@ const soundManager = createSoundManager({
   song1,
   song2,
   song3,
+  levelup,
 });
 
 export default soundManager;
