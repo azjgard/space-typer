@@ -7,7 +7,7 @@ git push
 MSG="$(git log -1 --pretty=%B)"
 
 # Build the site and checkout the deployment branch
-yarn build
+npm run build
 git checkout deploy
 git pull
 
