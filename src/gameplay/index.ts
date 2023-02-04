@@ -71,7 +71,7 @@ export function initGameplay() {
 
   const gameOverMenu = menuManager.create({
     name: "game-over",
-    getClickHandlers: ({ getMenu }) => ({
+    getClickHandlers: () => ({
       "play-again": () => {
         restart();
       },
