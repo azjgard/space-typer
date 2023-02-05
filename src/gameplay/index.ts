@@ -28,12 +28,12 @@ export const FRAME_SIZE_MS = 1000 / 60;
 const enemyIdFromWordId = (wordId: string) => `enemy-${wordId}`;
 
 const quit = () => {
-  window.location.hash = "";
+  // window.location.hash = "";
   window.location.reload();
 };
 
 const restart = () => {
-  window.location.hash = "#restart";
+  // window.location.hash = "#restart";
   window.location.reload();
 };
 
