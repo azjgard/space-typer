@@ -19,6 +19,7 @@ import { createBackgroundManager } from "./managers/BackgroundManager";
 import { createMenuManager } from "./managers/MenuManager";
 import soundManager from "./managers/SoundManager";
 import { createMusicManager } from "./managers/MusicManager";
+import { FadeText } from "./entities/fadeText";
 
 export const DEBUG = true;
 export const UPDATE_INTERVAL_MS = 16.66; // 60 fps
@@ -181,6 +182,20 @@ export function initGameplay() {
     if (!game.getIsActive()) return;
     soundManager.play("levelup");
     updateCurrentLevelText(state.currentLevel);
+    game.createEntity(FadeText, {
+      id: "fade-text-" + i,
+      ttl: 500,
+      color: "rgba(255,255,180,1)",
+      text: "Level up!",
+      velocity: {
+        x: 0,
+        y: -50,
+      },
+      position: {
+        x: currentLevelText.position.x,
+        y: currentLevelText.position.y + 60,
+      },
+    });
   });
 
   typingEngine.on("typedFullWord", function destroyEnemy(state) {
