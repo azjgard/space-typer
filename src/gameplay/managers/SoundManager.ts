@@ -24,7 +24,7 @@ function createSoundManager<T extends Record<string, any>>(sounds: T) {
   const cache: Map<string, Howl> = new Map();
 
   Object.entries(sounds).forEach(([key, value]) => {
-    const howl = new Howl({ preload: true, src: [value] });
+    const howl = new Howl({ preload: true, src: [value], volume: 0.2 });
     cache.set(key, howl);
   });
 
