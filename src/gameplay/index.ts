@@ -183,7 +183,7 @@ export function initGameplay() {
     soundManager.play("levelup");
     updateCurrentLevelText(state.currentLevel);
     game.createEntity(FadeText, {
-      id: "fade-text-" + i,
+      id: "fade-text",
       ttl: 500,
       color: "rgba(255,255,180,1)",
       text: "Level up!",
