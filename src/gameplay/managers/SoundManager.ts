@@ -1,4 +1,4 @@
-import { Howl } from "howler";
+import { Howler, Howl } from "howler";
 
 import click from "../../assets/sounds/click.wav";
 import explosion from "../../assets/sounds/explosion.wav";
@@ -50,3 +50,14 @@ function createSoundManager<T extends Record<string, any>>(sounds: T) {
     },
   };
 }
+
+export function changeVolume (e: KeyboardEvent) {
+  const { key } = e;
+  if (key === "[") {
+    Howler.volume((Howler.volume() * 100 - 10) / 100);
+  }
+
+  if (key === "]") {
+    Howler.volume((Howler.volume() * 100 + 10) / 100);
+  }
+};

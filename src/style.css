@@ -46,6 +46,10 @@ body {
   background-color: black;
 }
 
+span {
+  color: firebrick;
+}
+
 .app {
   display: flex;
   flex-direction: column;

@@ -1,5 +1,6 @@
 import Enemy from "./entities/enemy";
 import Entity from "./entities/entity";
+import { changeVolume } from "./managers/SoundManager";
 import { createCanvas, createDeltaTracker, IDeltaTracker } from "./lib";
 
 export function createGame() {
@@ -15,7 +16,7 @@ export function createGame() {
   let paused = false;
   let entities: { [entityId: string]: Entity } = {};
   let enemies: { [enemyId: string]: Enemy } = {};
-  let keyDownListeners: ((e: KeyboardEvent) => void)[] = [];
+  let keyDownListeners: ((e: KeyboardEvent) => void)[] = [changeVolume];
   let timeouts: {
     currentTime: number;
     totalTime: number;
@@ -123,12 +124,13 @@ export function createGame() {
     keyDownListeners.forEach((fn) => fn(e));
   };
 
+  document.addEventListener("keydown", _onKeyDown);
+
   function start() {
     active = true;
     deltaTracker = createDeltaTracker();
     onStart();
     requestAnimationFrame(loop);
-    document.addEventListener("keydown", _onKeyDown);
   }
 
   function end() {

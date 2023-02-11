@@ -1,4 +1,5 @@
 import canAutoplay from "can-autoplay";
+import { Howler } from "howler";
 import { createGame } from "./game";
 import { createTypingEngine } from "./typingEngine";
 import {
@@ -135,6 +136,30 @@ export function initGameplay() {
   };
   updateCurrentLevelText(0);
 
+  const currentVolumeText = game.createEntity(Entity, {
+    id: "currentVolume",
+    position: {
+      x: game.canvas.width - 80,
+      y: game.canvas.height - 20,
+    },
+  });
+
+  const updateCurrentVolumeText = (volume: number) => {
+    let spacing = ' ';
+    if (volume * 100 < 100) {
+      spacing = '  ';
+    }
+    if (volume * 100 === 0) {
+      spacing = '   ';
+    }
+    currentVolumeText.setText({
+      font: "25px VT323",
+      fillStyle: "gray",
+      value: `volume:${spacing}${volume * 100}%`,
+    });
+  };
+  updateCurrentVolumeText(Howler.volume());
+
   const player = game.createEntity(Player, {
     size: {
       width: 100,
@@ -268,6 +293,7 @@ export function initGameplay() {
         }
       }
     });
+    updateCurrentVolumeText(Howler.volume());
   });
 
   game.setDraw((fn) => {
