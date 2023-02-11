@@ -173,10 +173,6 @@ export function initGameplay() {
 
   const VERTICAL_PADDING = 50;
 
-  typingEngine.on("volumeUpdated", async function updateVolumel(state) {
-    updateCurrentVolumeText(state.currentVolume);
-  });
-
   typingEngine.on("waveStarted", async function startWave(state) {
     if (!game.getIsActive()) return;
 
@@ -297,6 +293,7 @@ export function initGameplay() {
         }
       }
     });
+    updateCurrentVolumeText(Howler.volume());
   });
 
   game.setDraw((fn) => {

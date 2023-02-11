@@ -1,4 +1,3 @@
-import { Howler } from 'howler';
 import { Level, levels, Wave } from "./levels";
 
 import list1 from "../assets/words/1.json";
@@ -52,7 +51,6 @@ interface WordObject {
 export interface TypingEngineState {
   active: boolean;
   currentLevel: number;
-  currentVolume: number;
   currentTargetId: string | undefined;
   currentTypedWord: string;
   nextExpectedCharacter: string | undefined;
@@ -68,13 +66,11 @@ export interface TypingEngineEvents {
   resetWordState: TypingEngineState;
   updateCurrentlyTypedWord: TypingEngineState;
   typedFullWord: TypingEngineState & { typedFullWordId: string };
-  volumeUpdated: TypingEngineState;
 }
 
 const DEFAULT_STATE: TypingEngineState = {
   active: false,
   currentLevel: 0,
-  currentVolume: Howler.volume(),
   currentTargetId: undefined,
   currentTypedWord: "",
   nextExpectedCharacter: undefined,
@@ -97,7 +93,6 @@ export const createTypingEngine = (args: {
     typedFullWord: [],
     waveStarted: [],
     waveEnded: [],
-    volumeUpdated: [],
   };
 
   const resetWordState = () => {
@@ -253,22 +248,12 @@ export const createTypingEngine = (args: {
     "Escape",
     "Shift",
     "Control",
-    "Alt"
-  ]);
-
-  const specialKeys = new Set([
-    "[",
-    "]"
+    "Alt",
   ]);
 
   const onKeyDown = (e: KeyboardEvent) => {
     const { key } = e;
     if (ignoreKeys.has(key)) return;
-
-    if (specialKeys.has(key)) {
-      state.currentVolume = Howler.volume();
-      registeredEvents.volumeUpdated.forEach((fn) => fn(state));
-    }
 
     if (state.currentTargetId === undefined) {
       const wo = state.activeWordObjects.find(({ word: [fl] }) => fl === key);
