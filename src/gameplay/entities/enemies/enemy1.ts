@@ -11,7 +11,8 @@ interface IEnemy1Options extends IEnemyOptions {}
 export default class Enemy1 extends Enemy {
   public static width = 64;
   public static height = 64;
-  public static startingVelocity = [-50, -80] as const;
+  // ez mode for Sawyer
+  public static startingVelocity = [-20, -40] as const;
 
   initialPosition: { x: number; y: number } | null;
 
